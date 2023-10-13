@@ -17,9 +17,15 @@ This is a brief introduction to the project.
 ```
 conda env create -f environment.yml
 ```
+3. Activate the environment:
+```
+conda activate data-mining-project
+```
 
 ## Usage
-Instructions on how to use the project.
+### Web Application
+1. `cd app`
+2. `flask run`
 
 ## Developing
 ### Updating Dependencies
@@ -27,5 +33,6 @@ If you add new dependencies to your conda environment, make sure to export it pr
 ```
 conda env export | grep -v "^prefix: " > environment.yml
 ```
+> Only use `conda install` for installing new packages. Avoid using `pip`` in the environment, since it may break things
 
 
