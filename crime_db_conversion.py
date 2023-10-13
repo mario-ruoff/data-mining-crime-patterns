@@ -25,7 +25,7 @@ with open (FILE_NAME, 'r') as file:
 
 
 # "11646166","JC213529","2018-09-01T00:01:00","082XX S INGLESIDE AVE","0810","THEFT,OVER $500","RESIDENCE",false,true,"0631","006,"8","44",06",,,2018,"2019-04-06T16:04:43",,,
-    execution_string = ''' CREATE TABLE IF NOT EXISTS crime_stats
+    execution_string = ''' CREATE TABLE IF NOT EXISTS raw_crime_stats
                 (id INTEGER,
                  case_number TEXT,
                  date TEXT,
