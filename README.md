@@ -33,6 +33,6 @@ If you add new dependencies to your conda environment, make sure to export it pr
 ```
 conda env export | grep -v "^prefix: " > environment.yml
 ```
-> Only use `conda install` for installing new packages. Avoid using `pip`` in the environment, since it may break things
+> Prefer using `conda install` for installing new packages. Onlyu use `pip`` in the environment to install packages that are not available in conda.
 
 

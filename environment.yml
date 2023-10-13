@@ -36,6 +36,7 @@ dependencies:
   - openssl=3.1.3=hd590300_0
   - pip=23.2.1=pyhd8ed1ab_0
   - python=3.12.0=hab00c5b_0_cpython
+  - python-dotenv=1.0.0=pyhd8ed1ab_1
   - python_abi=3.12=4_cp312
   - readline=8.2=h8228510_1
   - scikit-learn=1.3.1=py312h394d371_1
@@ -48,3 +49,29 @@ dependencies:
   - wheel=0.41.2=pyhd8ed1ab_0
   - xz=5.2.6=h166bdaf_0
   - zipp=3.17.0=pyhd8ed1ab_0
+  - pip:
+      - certifi==2023.7.22
+      - charset-normalizer==3.3.0
+      - flask-googlemaps==0.4.1
+      - ghp-import==2.1.0
+      - htmlmin==0.1.12
+      - idna==3.4
+      - jsmin==3.0.1
+      - markdown==3.5
+      - mergedeep==1.3.4
+      - mkdocs==1.5.3
+      - mkdocs-material==5.5.14
+      - mkdocs-material-extensions==1.2
+      - mkdocs-minify-plugin==0.3.0
+      - packaging==23.2
+      - pathspec==0.11.2
+      - platformdirs==3.11.0
+      - pygments==2.16.1
+      - pymdown-extensions==10.3
+      - python-dateutil==2.8.2
+      - pyyaml==6.0.1
+      - pyyaml-env-tag==0.1
+      - requests==2.31.0
+      - six==1.16.0
+      - urllib3==2.0.6
+      - watchdog==3.0.0
