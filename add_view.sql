@@ -1,0 +1,1 @@
+create view crimes as select date, primary_type, arrest, latitude, longitude from raw_crime_stats

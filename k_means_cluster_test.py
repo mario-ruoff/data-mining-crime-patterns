@@ -23,10 +23,7 @@ if DEBUG_TOGGLE:
 
 # Get the appropiate records from the database, based on the query
 query_string = '''
-SELECT crime_stats.date, primary_type, description, latitude, longitude
-FROM crime_stats
-WHERE primary_type == 'ASSAULT'
-ORDER BY latitude
+SELECT * from crimes
 LIMIT 100
 '''
 
@@ -35,6 +32,7 @@ result = results.fetchone()
 while(result is not None):
     records.append(result)
     result = results.fetchone()
+    print(result)
 
 print(str(len(records)))
 
