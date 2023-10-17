@@ -2,29 +2,34 @@
 <html>
   <head>
     <title>{{ title }}</title>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='map.css') }}">
     <script type="module" src="{{ url_for('static', filename='map.js') }}"></script>
   </head>
   <body>
-    <div id="floating-panel">
-      <button id="toggle-heatmap">Toggle Heatmap</button>
-      <button id="change-gradient">Change gradient</button>
-      <button id="change-radius">Change radius</button>
-      <button id="change-opacity">Change opacity</button>
-    </div>
     <div id="map"></div>
-
-    <!-- 
-      The `defer` attribute causes the callback to execute after the full HTML
-      document has been parsed. For non-blocking uses, avoiding race conditions,
-      and consistent behavior across browsers, consider loading using Promises.
-      See https://developers.google.com/maps/documentation/javascript/load-maps-js-api
-      for more information.
-      -->
     <script
       src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&callback=initMap&libraries=visualization&v=weekly"
       defer
     ></script>
+    <script>
+      let map, heatmap;
+
+      function initMap() {
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: {{ zoom }},
+          center: new google.maps.LatLng({{ center[0] }}, {{ center[1] }}),
+          mapTypeId: "roadmap",
+        });
+        heatmap = new google.maps.visualization.HeatmapLayer({
+          data: [{% for point in heatmap %}
+              new google.maps.LatLng({{ point[0] }}, {{ point[1] }}),
+          {% endfor %}],
+          map: map,
+          radius: 20,
+        });
+      }
+
+      window.initMap = initMap;
+    </script>
   </body>
 </html>
