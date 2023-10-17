@@ -25,7 +25,7 @@ conda activate data-mining-project
 ## Usage
 ### Web Application
 1. `cd app`
-2. `flask run`
+2. `flask run (--debug)`
 
 ## Developing
 ### Updating Dependencies
@@ -33,6 +33,6 @@ If you add new dependencies to your conda environment, make sure to export it pr
 ```
 conda env export | grep -v "^prefix: " > environment.yml
 ```
-> Prefer using `conda install` for installing new packages. Onlyu use `pip`` in the environment to install packages that are not available in conda.
+> Prefer using `conda install` for installing new packages. Only use `pip` in the environment to install packages that are not available in conda.
 
 
