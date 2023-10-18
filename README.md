@@ -21,6 +21,10 @@ conda env create -f environment.yml
 ```
 conda activate data-mining-project
 ```
+4. Get a Google Maps API key from the [Google Developer Platform](https://developers.google.com/maps) and put it into a `.env` file inside the `app` folder:
+```
+GOOGLE_API_KEY=<YOUR_API_KEY>
+```
 
 ## Usage
 ### Web Application

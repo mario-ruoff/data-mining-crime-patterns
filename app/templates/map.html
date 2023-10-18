@@ -12,14 +12,18 @@
       defer
     ></script>
     <script>
-      let map, heatmap;
+      let map, heatmap, police_stations;
 
       function initMap() {
+
+        // Create the map
         map = new google.maps.Map(document.getElementById("map"), {
           zoom: {{ zoom }},
           center: new google.maps.LatLng({{ center[0] }}, {{ center[1] }}),
           mapTypeId: "roadmap",
         });
+
+        // Create the crime heatmap
         heatmap = new google.maps.visualization.HeatmapLayer({
           data: [{% for point in heatmap %}
               new google.maps.LatLng({{ point[0] }}, {{ point[1] }}),
@@ -27,6 +31,14 @@
           map: map,
           radius: 20,
         });
+
+        // Create the police station markers
+        police_stations = [{% for station in police_stations %}
+            new google.maps.Marker({
+              position: new google.maps.LatLng({{ station[0] }}, {{ station[1] }}),
+              map: map,
+            }),
+        {% endfor %}];
       }
 
       window.initMap = initMap;
