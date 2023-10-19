@@ -3,7 +3,9 @@
   <head>
     <title>{{ title }}</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='map.css') }}">
+    <script src="{{ url_for('static', filename='map-style.js') }}"></script>
   </head>
   <body>
     <div id="map"></div>
@@ -21,7 +23,40 @@
           zoom: {{ zoom }},
           center: new google.maps.LatLng({{ center[0] }}, {{ center[1] }}),
           mapTypeId: "roadmap",
+          styles: mapStyle,
+          disableDefaultUI: true,
         });
+
+        // Create the Recenter button
+        const recenterButton = document.createElement("button");
+        recenterButton.classList.add("dark-button");
+        recenterButton.innerHTML = '<i class="fa-solid fa-arrows-to-dot"></i>';
+        recenterButton.title = "Recenter the map";
+        recenterButton.addEventListener("click", () => {
+          map.setCenter(new google.maps.LatLng({{ center[0] }}, {{ center[1] }}));
+        });
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(recenterButton);
+
+        // Create the zoom buttons
+        const zoomOutButton = document.createElement("button");
+        zoomOutButton.id = "zoom-bottom"
+        zoomOutButton.classList.add("dark-button");
+        zoomOutButton.innerHTML = '<i class="fa-solid fa-minus"></i>';
+        zoomOutButton.title = "Zoom out";
+        zoomOutButton.addEventListener("click", () => {
+          map.setZoom(map.getZoom() - 1);
+        });
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomOutButton);
+        
+        const zoomInButton = document.createElement("button");
+        zoomInButton.id = "zoom-top"
+        zoomInButton.classList.add("dark-button");
+        zoomInButton.innerHTML = '<i class="fa-solid fa-plus"></i>';
+        zoomInButton.title = "Zoom in";
+        zoomInButton.addEventListener("click", () => {
+          map.setZoom(map.getZoom() + 1);
+        });
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomInButton);
 
         // Create the crime heatmap
         heatmap = new google.maps.visualization.HeatmapLayer({
