@@ -74,7 +74,7 @@
         heatPlusButton.innerHTML = '<i class="fa-solid fa-minimize"></i>';
         heatPlusButton.title = "Shrink Heatmap";
         heatPlusButton.addEventListener("click", () => {
-          heatmap.set("radius", heatmap.get("radius") - 2);
+          heatmap.set("radius", heatmap.get("radius") - 4);
         });
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatPlusButton);
         
@@ -84,7 +84,7 @@
         heatMinusButtom.innerHTML = '<i class="fa-solid fa-maximize"></i>';
         heatMinusButtom.title = "Enlarge Heatmap";
         heatMinusButtom.addEventListener("click", () => {
-          heatmap.set("radius", heatmap.get("radius") + 2);
+          heatmap.set("radius", heatmap.get("radius") + 4);
         });
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatMinusButtom);
 
@@ -92,6 +92,14 @@
         police_stations = [{% for station in police_stations %}
             new google.maps.Marker({
               position: new google.maps.LatLng({{ station[0] }}, {{ station[1] }}),
+              icon: {
+                path: "m372-353.334 108-80 105.333 80-42.666-129.333 107.999-80H520l-40-128.666-40 128.666H309.334l105.999 80L372-353.334ZM480-80.667q-139.667-35-229.833-161.5Q160-368.667 160-520.667v-240l320-120 320 120v240q0 152-90.167 278.5-90.166 126.5-229.833 161.5Z",
+                fillColor: "#95a5a6",
+                fillOpacity: 1,
+                scale: 0.04,
+                anchor: new google.maps.Point(480, 0),
+              },
+              clickable: false,
               map: map,
             }),
         {% endfor %}];
