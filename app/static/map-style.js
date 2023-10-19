@@ -77,4 +77,14 @@ window.mapStyle = [
         elementType: "labels.text.stroke",
         stylers: [{ color: "#17263c" }],
       },
+      {
+        featureType: "poi",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }]
+      },
+      {
+        featureType: "road.highway",
+        elementType: "labels",
+        stylers: [{ visibility: "off" }]
+    }
   ];
