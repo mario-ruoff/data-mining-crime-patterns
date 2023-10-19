@@ -37,7 +37,7 @@
         });
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(recenterButton);
 
-        // Create the zoom buttons
+        // Create the map zoom buttons
         const zoomOutButton = document.createElement("button");
         zoomOutButton.id = "zoom-bottom"
         zoomOutButton.classList.add("dark-button");
@@ -66,6 +66,27 @@
           map: map,
           radius: 20,
         });
+
+        // Create the heatmap size buttons
+        const heatPlusButton = document.createElement("button");
+        heatPlusButton.id = "zoom-bottom"
+        heatPlusButton.classList.add("dark-button");
+        heatPlusButton.innerHTML = '<i class="fa-solid fa-minimize"></i>';
+        heatPlusButton.title = "Shrink Heatmap";
+        heatPlusButton.addEventListener("click", () => {
+          heatmap.set("radius", heatmap.get("radius") - 2);
+        });
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatPlusButton);
+        
+        const heatMinusButtom = document.createElement("button");
+        heatMinusButtom.id = "zoom-top"
+        heatMinusButtom.classList.add("dark-button");
+        heatMinusButtom.innerHTML = '<i class="fa-solid fa-maximize"></i>';
+        heatMinusButtom.title = "Enlarge Heatmap";
+        heatMinusButtom.addEventListener("click", () => {
+          heatmap.set("radius", heatmap.get("radius") + 2);
+        });
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatMinusButtom);
 
         // Create the police station markers
         police_stations = [{% for station in police_stations %}
