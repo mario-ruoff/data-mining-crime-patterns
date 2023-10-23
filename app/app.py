@@ -18,16 +18,8 @@ def load_map():
         google_api_key=os.getenv("GOOGLE_API_KEY"),
         center=(41.87820816040039, -87.62979125976562),
         zoom=10,
-        heatmap=[
-            (41.87820816040039, -87.62979125976562),
-            (41.77820816040039, -87.62979125976562),
-            (41.8382, -87.6897),
-            (41.9182, -87.7097),
-            (41.7982, -87.6497),
-            (41.8582, -87.6697),
-            (41.9082, -87.6697),
-        ],
-        police_stations=data.update_results(''),
+        heatmap=data.get_crimes(),
+        police_stations=data.get_police_stations(),
         presence_predictions=[
             (41.8782, -87.6297),
             (41.7782, -87.6297),
