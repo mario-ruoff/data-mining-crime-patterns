@@ -1,11 +1,13 @@
 from flask import Flask, render_template
 from dotenv import load_dotenv
 import os
+from clusters import ChicagoCrimes
 
 # Initialize app
 load_dotenv()
 app = Flask(__name__)
 title = "Chicago Crime Map"
+data = ChicagoCrimes('../crimes.db')
 
 # Set up main route
 @app.route("/")
@@ -25,13 +27,7 @@ def load_map():
             (41.8582, -87.6697),
             (41.9082, -87.6697),
         ],
-        police_stations=[
-            (41.8982, -87.6097),
-            (41.9382, -87.6397),
-            (41.9082, -87.7797),
-            (41.7682, -87.6397),
-            (41.8482, -87.6497),
-        ],
+        police_stations=data.update_results(''),
         presence_predictions=[
             (41.8782, -87.6297),
             (41.7782, -87.6297),
