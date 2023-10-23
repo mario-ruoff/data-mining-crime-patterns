@@ -12,15 +12,16 @@ class ChicagoCrimes:
         cursor = db_connection.cursor()
 
         query = '''
-            SELECT * from crimes
+            SELECT latitude,longitude from police
             LIMIT 100
             '''
+        
+        self.current_results = []
+        raw_results = cursor.execute(query)
+        result = raw_results.fetchone()
+        while(result is not None):
+            print(result)
+            self.current_results.append((result[0], result[1]))
+            result = raw_results.fetchone()
 
-        return [
-            (41.8982, -87.6097),
-            (41.9382, -87.6397),
-            (41.9082, -87.7797),
-            (41.7682, -87.6397),
-            (41.8482, -87.6497),
-            (0.000, 0.000),
-        ]
+        return self.current_results

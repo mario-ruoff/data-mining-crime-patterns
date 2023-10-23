@@ -7,7 +7,7 @@ from database.clusters import ChicagoCrimes
 load_dotenv()
 app = Flask(__name__)
 title = "Chicago Crime Map"
-data = ChicagoCrimes('../crimes.db')
+data = ChicagoCrimes('../database/crimes.db')
 
 # Set up main route
 @app.route("/")
