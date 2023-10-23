@@ -29,11 +29,13 @@ This is a brief introduction to the project.
     conda activate data-mining-project
     ```
 
-4. Get a Google Maps API key from the [Google Developer Platform](https://developers.google.com/maps) and put it into a `.env` file inside the `app` folder:
+4. Get a Google Maps API key from the [Google Developer Platform](https://developers.google.com/maps) and put it into a file named `.env` file inside the `app` folder:
 
     ```text
     GOOGLE_API_KEY=<YOUR_API_KEY>
     ```
+
+5. Get a copy of the database from discord and put it into the `database` folder.
 
 ## Usage
 
