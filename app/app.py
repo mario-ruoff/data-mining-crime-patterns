@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from dotenv import load_dotenv
 import os
-from clusters import ChicagoCrimes
+from database.clusters import ChicagoCrimes
 
 # Initialize app
 load_dotenv()
