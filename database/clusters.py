@@ -1,3 +1,4 @@
+import numpy as np
 import os
 import sqlite3
 
@@ -34,8 +35,9 @@ class ChicagoCrimes:
             cursor = db_connection.cursor()
 
             query = '''
-                SELECT latitude,longitude from crimes
-                ORDER BY RANDOM()
+                SELECT latitude,longitude, date, primary_type from crimes
+                WHERE arrest=0 and primary_type='ASSAULT' and year=2023
+                ORDER BY date
                 LIMIT 1000
                 '''
             
