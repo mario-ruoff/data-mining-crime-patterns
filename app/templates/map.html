@@ -20,7 +20,7 @@
 
         // Create the map
         map = new google.maps.Map(document.getElementById("map"), {
-          zoom: {{ zoom }},
+          zoom: {{ zoomLevel }},
           center: new google.maps.LatLng({{ center[0] }}, {{ center[1] }}),
           mapTypeId: "roadmap",
           styles: mapStyle,
@@ -31,7 +31,7 @@
         const recenterButton = document.createElement("button");
         recenterButton.classList.add("dark-button");
         recenterButton.innerHTML = '<i class="fa-solid fa-arrows-to-dot"></i>';
-        recenterButton.title = "Recenter the map";
+        recenterButton.title = "Recenter Map";
         recenterButton.addEventListener("click", () => {
           map.setCenter(new google.maps.LatLng({{ center[0] }}, {{ center[1] }}));
         });
@@ -44,7 +44,9 @@
         zoomOutButton.innerHTML = '<i class="fa-solid fa-minus"></i>';
         zoomOutButton.title = "Zoom out";
         zoomOutButton.addEventListener("click", () => {
-          map.setZoom(map.getZoom() - 1);
+          if (map.getZoom() > {{ zoomLevelMin }}) map.setZoom(map.getZoom() - 1);
+          if (map.getZoom() <= {{ zoomLevelMin }}) zoomOutButton.disabled = true;
+          if (map.getZoom() < {{ zoomLevelMax }}) zoomInButton.disabled = false;
         });
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomOutButton);
         
@@ -54,7 +56,9 @@
         zoomInButton.innerHTML = '<i class="fa-solid fa-plus"></i>';
         zoomInButton.title = "Zoom in";
         zoomInButton.addEventListener("click", () => {
-          map.setZoom(map.getZoom() + 1);
+          if (map.getZoom() < {{ zoomLevelMax }}) map.setZoom(map.getZoom() + 1);
+          if (map.getZoom() >= {{ zoomLevelMax }}) zoomInButton.disabled = true;
+          if (map.getZoom() > {{ zoomLevelMin }}) zoomOutButton.disabled = false;
         });
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomInButton);
 
@@ -64,7 +68,7 @@
               new google.maps.LatLng({{ point[0] }}, {{ point[1] }}),
           {% endfor %}],
           map: map,
-          radius: 20,
+          radius: {{ heatmapRadius }},
         });
 
         // Create the heatmap size buttons
@@ -74,19 +78,23 @@
         heatPlusButton.innerHTML = '<i class="fa-solid fa-minimize"></i>';
         heatPlusButton.title = "Shrink Heatmap";
         heatPlusButton.addEventListener("click", () => {
-          heatmap.set("radius", heatmap.get("radius") - 4);
+          if (heatmap_markers.get("radius") > {{ heatmapRadiusMin}}) heatmap_markers.set("radius", heatmap_markers.get("radius") - 4);
+          if (heatmap_markers.get("radius") <= {{ heatmapRadiusMin}}) heatPlusButton.disabled = true;
+          if (heatmap_markers.get("radius") < {{ heatmapRadiusMax}}) heatMinusButton.disabled = false;
         });
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatPlusButton);
         
-        const heatMinusButtom = document.createElement("button");
-        heatMinusButtom.id = "zoom-top"
-        heatMinusButtom.classList.add("dark-button");
-        heatMinusButtom.innerHTML = '<i class="fa-solid fa-maximize"></i>';
-        heatMinusButtom.title = "Enlarge Heatmap";
-        heatMinusButtom.addEventListener("click", () => {
-          heatmap.set("radius", heatmap.get("radius") + 4);
+        const heatMinusButton = document.createElement("button");
+        heatMinusButton.id = "zoom-top"
+        heatMinusButton.classList.add("dark-button");
+        heatMinusButton.innerHTML = '<i class="fa-solid fa-maximize"></i>';
+        heatMinusButton.title = "Enlarge Heatmap";
+        heatMinusButton.addEventListener("click", () => {
+          if (heatmap_markers.get("radius") < {{ heatmapRadiusMax}}) heatmap_markers.set("radius", heatmap_markers.get("radius") + 4);
+          if (heatmap_markers.get("radius") >= {{ heatmapRadiusMax}}) heatMinusButton.disabled = true;
+          if (heatmap_markers.get("radius") > {{ heatmapRadiusMin}}) heatPlusButton.disabled = false;
         });
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatMinusButtom);
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatMinusButton);
 
         // Create the police station markers
         police_stations_markers = [{% for marker in police_stations %}
@@ -120,7 +128,6 @@
             }),
         {% endfor %}];
 
-        console.log(presence_predictions_markers);
       }
 
       window.initMap = initMap;
