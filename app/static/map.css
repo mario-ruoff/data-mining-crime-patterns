@@ -28,6 +28,15 @@
     margin: 6px 4px;
     padding: 0;
   }
+  .dark-button:hover:enabled {
+    background-color: #444;
+    border: 2px solid #444;
+  }
+  .dark-button:disabled {
+    box-shadow: none;
+    color: #999;
+    cursor: default;
+  }
 
   #zoom-bottom {
     border-radius: 0 0 8px 8px;

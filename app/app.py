@@ -17,7 +17,12 @@ def load_map():
         title=title,
         google_api_key=os.getenv("GOOGLE_API_KEY"),
         center=(41.87820816040039, -87.62979125976562),
-        zoom=10,
+        zoomLevel=12,
+        zoomLevelMax=22,
+        zoomLevelMin=10,
+        heatmapRadius=20,
+        heatmapRadiusMin=0,
+        heatmapRadiusMax=100,
         heatmap=data.get_crimes(),
         police_stations=data.get_police_stations(),
         presence_predictions=[
