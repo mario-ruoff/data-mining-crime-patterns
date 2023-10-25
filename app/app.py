@@ -8,6 +8,8 @@ load_dotenv()
 app = Flask(__name__)
 title = "Chicago Crime Map"
 data = ChicagoCrimes('../database/crimes.db')
+stations = data.get_police_stations()
+crimes, clusters = data.get_crimes()
 
 # Set up main route
 @app.route("/")
@@ -23,15 +25,7 @@ def load_map():
         heatmapRadius=20,
         heatmapRadiusMin=0,
         heatmapRadiusMax=100,
-        heatmap=data.get_crimes(),
-        police_stations=data.get_police_stations(),
-        presence_predictions=[
-            (41.8782, -87.6297),
-            (41.7782, -87.6297),
-            (41.8382, -87.6897),
-            (41.9182, -87.7097),
-            (41.7982, -87.6497),
-            (41.8582, -87.6697),
-            (41.9082, -87.6697),
-        ],
+        heatmap=crimes,
+        police_stations=stations,
+        presence_predictions=clusters
     )

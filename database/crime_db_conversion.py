@@ -90,7 +90,7 @@ def convert_rawdata_to_database():
                 continue
             #split_line[21] = ""
 
-            execution_string = '''INSERT INTO crime_stats (
+            execution_string = '''INSERT INTO raw_crime_stats (
             id,
             case_number, 
             date, 
@@ -153,3 +153,5 @@ def convert_rawdata_to_database():
         cur.close()
 
     con.close()
+
+convert_rawdata_to_database()
