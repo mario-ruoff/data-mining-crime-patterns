@@ -8,6 +8,7 @@ class ChicagoCrimes:
     def __init__(self, db_file) -> None:
         self.db_file = db_file
         self.current_results = []
+        self.num_clusters = 0
         
     def get_police_stations(self, sql_query=None):
 
@@ -27,6 +28,7 @@ class ChicagoCrimes:
             self.current_results.append((result[0], result[1]))
             result = raw_results.fetchone()
 
+        self.num_clusters = len(self.current_results)
         return self.current_results
     
     def get_crimes(self, sql_query=None):
@@ -37,9 +39,9 @@ class ChicagoCrimes:
 
         query = '''
             SELECT latitude,longitude, date, primary_type from crimes
-            WHERE arrest=0 and primary_type='ASSAULT' and year=2023
+            WHERE arrest=0 and primary_type='ASSAULT'
             ORDER BY date
-            LIMIT 1000000
+            LIMIT 10000
             '''
         
         self.current_results = []
@@ -53,7 +55,7 @@ class ChicagoCrimes:
         record_array = np.array(self.current_results)
         locations = record_array[:, (0,1)]
 
-        k = KMeans(n_clusters=20, n_init='auto')
+        k = KMeans(n_clusters=self.num_clusters, n_init='auto')
         k.fit(locations)
         clusters = k.cluster_centers_
 
