@@ -9,6 +9,11 @@ class ChicagoCrimes:
         self.db_file = db_file
         self.current_results = []
         self.num_clusters = 0
+
+        # add logic here to preprocess the database
+        # here we should try to go through the crimes
+        # database in order to figure out outliers,
+        # this will help with clustering later
         
     def get_police_stations(self, sql_query=None):
 
