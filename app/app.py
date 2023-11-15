@@ -9,11 +9,12 @@ app = Flask(__name__)
 title = "Chicago Crime Map"
 data = ChicagoCrimes('../database/crimes.db')
 
+stations = data.get_police_stations()
+crimes, clusters = data.get_crimes()
+
 # Set up main route
 @app.route("/")
 def load_map():
-    stations = data.get_police_stations()
-    crimes, clusters = data.get_crimes()
     
     return render_template(
         "map.html",

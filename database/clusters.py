@@ -38,10 +38,8 @@ class ChicagoCrimes:
     
     def get_crimes(self, sql_query=None):
 
-        # something something database
         db_connection = sqlite3.connect(self.db_file)
         cursor = db_connection.cursor()
-
         query = '''
             SELECT latitude,longitude, date, primary_type from crimes
             WHERE arrest=0 and primary_type='ASSAULT'
@@ -65,3 +63,29 @@ class ChicagoCrimes:
         clusters = k.cluster_centers_
 
         return self.current_results, clusters
+    
+    def get_crime_types(self):
+        results = []
+
+        query = '''
+            SELECT DISTINCT primary_type from crimes 
+            WHERE primary_type NOT IN (
+                'NON-CRIMINAL (SUBJECT SPECIFIED)',
+                'NON-CRIMINAL',
+                'NON - CRIMINAL'
+                )
+            '''
+        
+        db_connection = sqlite3.connect(self.db_file)
+        cursor = db_connection.cursor()
+        query_task = cursor.execute(query)
+        first = query_task.fetchone()
+        while(first is not None):
+            results.append(first[0])
+            first = query_task.fetchone()
+
+        return results
+    
+if __name__ == '__main__':
+    crimes_test = ChicagoCrimes('./crimes.db')
+    print(crimes_test.get_crime_types())
