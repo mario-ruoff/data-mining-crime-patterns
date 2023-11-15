@@ -10,12 +10,36 @@ title = "Chicago Crime Map"
 data = ChicagoCrimes('../database/crimes.db')
 
 stations = data.get_police_stations()
-crimes, clusters = data.get_crimes()
+crimes, clusters = data.get_crimes(len(stations))
 
 # Set up main route
 @app.route("/")
 def load_map():
     
+    return render_template(
+        "map.html",
+        title=title,
+        google_api_key=os.getenv("GOOGLE_API_KEY"),
+        center=(41.87820816040039, -87.62979125976562),
+        zoomLevel=12,
+        zoomLevelMax=22,
+        zoomLevelMin=10,
+        heatmapRadius=20,
+        heatmapRadiusMin=0,
+        heatmapRadiusMax=100,
+        heatmap=crimes,
+        police_stations=stations,
+        presence_predictions=clusters
+    )
+
+# Set up main route
+@app.route("/refresh")
+def load_map_fresh():
+
+
+    stations = data.get_police_stations()
+    crimes, clusters = data.get_crimes(2)
+
     return render_template(
         "map.html",
         title=title,

@@ -15,7 +15,7 @@ class ChicagoCrimes:
         # database in order to figure out outliers,
         # this will help with clustering later
         
-    def get_police_stations(self, sql_query=None):
+    def get_police_stations(self):
 
         # something something database
         db_connection = sqlite3.connect(self.db_file)
@@ -36,13 +36,13 @@ class ChicagoCrimes:
         self.num_clusters = len(self.current_results)
         return self.current_results
     
-    def get_crimes(self, sql_query=None):
+    def get_crimes(self, k=2):
 
         db_connection = sqlite3.connect(self.db_file)
         cursor = db_connection.cursor()
         query = '''
             SELECT latitude,longitude, date, primary_type from crimes
-            WHERE arrest=0 and primary_type='ASSAULT'
+            WHERE arrest=0 and primary_type='ASSAULT' and location_description='STREET'
             ORDER BY date
             LIMIT 10000
             '''
@@ -58,7 +58,7 @@ class ChicagoCrimes:
         record_array = np.array(self.current_results)
         locations = record_array[:, (0,1)]
 
-        k = KMeans(n_clusters=self.num_clusters, n_init='auto')
+        k = KMeans(n_clusters=k, n_init='auto')
         k.fit(locations)
         clusters = k.cluster_centers_
 
