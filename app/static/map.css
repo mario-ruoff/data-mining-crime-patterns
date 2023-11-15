@@ -38,11 +38,11 @@
     cursor: default;
   }
 
-  #zoom-bottom {
+  .button-bottom {
     border-radius: 0 0 8px 8px;
     margin-top: 0;
   }
-  #zoom-top {
+  .button-top {
     border-radius: 8px 8px 0 0;
     margin-bottom: 0;
     border-bottom: 1px solid #555;

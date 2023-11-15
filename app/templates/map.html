@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <title>{{ title }}</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
@@ -7,14 +8,37 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='map.css') }}">
     <script src="{{ url_for('static', filename='map-style.js') }}"></script>
   </head>
+
   <body>
     <div id="map"></div>
+    
+    <div id="map-controls">
+      <button id="recenterButton" class="dark-button" title="Recenter Map">
+        <i class="fa-solid fa-arrows-to-dot"></i>
+      </button>
+      <button id="zoomOutButton" class="dark-button button-bottom" title="Zoom out">
+        <i class="fa-solid fa-minus"></i>
+      </button>
+      <button id="zoomInButton" class="dark-button button-top" title="Zoom in">
+        <i class="fa-solid fa-plus"></i>
+      </button>
+      <button id="heatPlusButton" class="dark-button button-bottom" title="Shrink Heatmap">
+        <i class="fa-solid fa-minimize"></i>
+      </button>
+      <button id="heatMinusButton" class="dark-button button-top" title="Enlarge Heatmap">
+        <i class="fa-solid fa-maximize"></i>
+      </button>
+    </div>
+
     <script
       src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&callback=initMap&libraries=visualization&v=weekly"
       defer
     ></script>
+
     <script>
       let map, heatmap_markers, police_stations_markers, presence_predictions_markers;
+      const police_station_icon = "m372-353.334 108-80 105.333 80-42.666-129.333 107.999-80H520l-40-128.666-40 128.666H309.334l105.999 80L372-353.334ZM480-80.667q-139.667-35-229.833-161.5Q160-368.667 160-520.667v-240l320-120 320 120v240q0 152-90.167 278.5-90.166 126.5-229.833 161.5Z";
+      const presence_predictions_icon = "M479.78-71.667q-84.113 0-158.613-31.833T191-191q-55.667-55.667-87.5-130.317T71.667-480q0-117 60.167-214.876Q192-792.751 297.667-845.667q1 20.334 4.667 40.333 3.666 20 10.999 47.333-73.666 43.667-115.667 118.102-42 74.435-42 159.899 0 135.009 94.663 229.671Q344.991-155.666 480-155.666q135.288 0 230.144-94.663Q805.001-344.991 805.001-480q0-86.12-42.334-159.894-42.334-73.773-116-118.107 6.922-27.466 11.128-47.733Q662-826 662.333-845.667 768-793 828.5-694.667 889-596.333 889-480q0 84.033-32.167 158.683Q824.667-246.667 769-191t-129.887 87.5q-74.22 31.833-159.333 31.833Zm.22-160q-104.055 0-176.194-72.139Q231.667-375.945 231.667-480q0-61 27.167-113.5Q286-646 334.667-681.667q5.745 18.296 12.539 39.815 6.794 21.518 16.127 48.851-23.333 22.334-35.5 51.501-12.167 29.166-12.167 61.5 0 69 47.667 116.667t116.614 47.667q68.947 0 117-47.667Q645.001-411 645.001-480q0-32.334-12.501-61.5-12.5-29.167-35.167-51.501 9.334-28.333 15.833-49.666 6.5-21.333 12.167-39 48.667 36 76.167 88.334Q729-541 729-480q0 104.055-72.333 176.194Q584.333-231.667 480-231.667Zm-40.333-386.667Q400.667-733 389.5-777.833 378.334-822.667 378.334-860q0-42.653 29.638-72.493 29.638-29.84 72-29.84 42.361 0 72.361 29.84 30 29.84 30 72.493 0 37.333-11.578 82.121Q559.177-733.092 521-618.334h-81.333Zm40.333 220q-34 0-57.833-23.833T398.334-480q0-34 23.833-58.166Q446-562.333 480-562.333t58.166 24.325q24.167 24.325 24.167 58.008 0 34-24.325 57.833T480-398.334Z";
 
       function initMap() {
 
@@ -28,41 +52,6 @@
           clickableIcons: false,
         });
 
-        // Create the Recenter button
-        const recenterButton = document.createElement("button");
-        recenterButton.classList.add("dark-button");
-        recenterButton.innerHTML = '<i class="fa-solid fa-arrows-to-dot"></i>';
-        recenterButton.title = "Recenter Map";
-        recenterButton.addEventListener("click", () => {
-          map.setCenter(new google.maps.LatLng({{ center[0] }}, {{ center[1] }}));
-        });
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(recenterButton);
-
-        // Create the map zoom buttons
-        const zoomOutButton = document.createElement("button");
-        zoomOutButton.id = "zoom-bottom"
-        zoomOutButton.classList.add("dark-button");
-        zoomOutButton.innerHTML = '<i class="fa-solid fa-minus"></i>';
-        zoomOutButton.title = "Zoom out";
-        zoomOutButton.addEventListener("click", () => {
-          if (map.getZoom() > {{ zoomLevelMin }}) map.setZoom(map.getZoom() - 1);
-          if (map.getZoom() <= {{ zoomLevelMin }}) zoomOutButton.disabled = true;
-          if (map.getZoom() < {{ zoomLevelMax }}) zoomInButton.disabled = false;
-        });
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomOutButton);
-        
-        const zoomInButton = document.createElement("button");
-        zoomInButton.id = "zoom-top"
-        zoomInButton.classList.add("dark-button");
-        zoomInButton.innerHTML = '<i class="fa-solid fa-plus"></i>';
-        zoomInButton.title = "Zoom in";
-        zoomInButton.addEventListener("click", () => {
-          if (map.getZoom() < {{ zoomLevelMax }}) map.setZoom(map.getZoom() + 1);
-          if (map.getZoom() >= {{ zoomLevelMax }}) zoomInButton.disabled = true;
-          if (map.getZoom() > {{ zoomLevelMin }}) zoomOutButton.disabled = false;
-        });
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomInButton);
-
         // Create the crime heatmap
         heatmap_markers = new google.maps.visualization.HeatmapLayer({
           data: [{% for point in heatmap %}
@@ -72,37 +61,12 @@
           radius: {{ heatmapRadius }},
         });
 
-        // Create the heatmap size buttons
-        const heatPlusButton = document.createElement("button");
-        heatPlusButton.id = "zoom-bottom"
-        heatPlusButton.classList.add("dark-button");
-        heatPlusButton.innerHTML = '<i class="fa-solid fa-minimize"></i>';
-        heatPlusButton.title = "Shrink Heatmap";
-        heatPlusButton.addEventListener("click", () => {
-          if (heatmap_markers.get("radius") > {{ heatmapRadiusMin}}) heatmap_markers.set("radius", heatmap_markers.get("radius") - 4);
-          if (heatmap_markers.get("radius") <= {{ heatmapRadiusMin}}) heatPlusButton.disabled = true;
-          if (heatmap_markers.get("radius") < {{ heatmapRadiusMax}}) heatMinusButton.disabled = false;
-        });
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatPlusButton);
-        
-        const heatMinusButton = document.createElement("button");
-        heatMinusButton.id = "zoom-top"
-        heatMinusButton.classList.add("dark-button");
-        heatMinusButton.innerHTML = '<i class="fa-solid fa-maximize"></i>';
-        heatMinusButton.title = "Enlarge Heatmap";
-        heatMinusButton.addEventListener("click", () => {
-          if (heatmap_markers.get("radius") < {{ heatmapRadiusMax}}) heatmap_markers.set("radius", heatmap_markers.get("radius") + 4);
-          if (heatmap_markers.get("radius") >= {{ heatmapRadiusMax}}) heatMinusButton.disabled = true;
-          if (heatmap_markers.get("radius") > {{ heatmapRadiusMin}}) heatPlusButton.disabled = false;
-        });
-        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatMinusButton);
-
         // Create the police station markers
         police_stations_markers = [{% for marker in police_stations %}
             new google.maps.Marker({
               position: new google.maps.LatLng({{ marker[0] }}, {{ marker[1] }}),
               icon: {
-                path: "m372-353.334 108-80 105.333 80-42.666-129.333 107.999-80H520l-40-128.666-40 128.666H309.334l105.999 80L372-353.334ZM480-80.667q-139.667-35-229.833-161.5Q160-368.667 160-520.667v-240l320-120 320 120v240q0 152-90.167 278.5-90.166 126.5-229.833 161.5Z",
+                path: police_station_icon,
                 fillColor: "#3498DB",
                 fillOpacity: 1,
                 strokeColor: "#1B4F72",
@@ -119,7 +83,7 @@
             new google.maps.Marker({
               position: new google.maps.LatLng({{ marker[0] }}, {{ marker[1] }}),
               icon: {
-                path: "M479.78-71.667q-84.113 0-158.613-31.833T191-191q-55.667-55.667-87.5-130.317T71.667-480q0-117 60.167-214.876Q192-792.751 297.667-845.667q1 20.334 4.667 40.333 3.666 20 10.999 47.333-73.666 43.667-115.667 118.102-42 74.435-42 159.899 0 135.009 94.663 229.671Q344.991-155.666 480-155.666q135.288 0 230.144-94.663Q805.001-344.991 805.001-480q0-86.12-42.334-159.894-42.334-73.773-116-118.107 6.922-27.466 11.128-47.733Q662-826 662.333-845.667 768-793 828.5-694.667 889-596.333 889-480q0 84.033-32.167 158.683Q824.667-246.667 769-191t-129.887 87.5q-74.22 31.833-159.333 31.833Zm.22-160q-104.055 0-176.194-72.139Q231.667-375.945 231.667-480q0-61 27.167-113.5Q286-646 334.667-681.667q5.745 18.296 12.539 39.815 6.794 21.518 16.127 48.851-23.333 22.334-35.5 51.501-12.167 29.166-12.167 61.5 0 69 47.667 116.667t116.614 47.667q68.947 0 117-47.667Q645.001-411 645.001-480q0-32.334-12.501-61.5-12.5-29.167-35.167-51.501 9.334-28.333 15.833-49.666 6.5-21.333 12.167-39 48.667 36 76.167 88.334Q729-541 729-480q0 104.055-72.333 176.194Q584.333-231.667 480-231.667Zm-40.333-386.667Q400.667-733 389.5-777.833 378.334-822.667 378.334-860q0-42.653 29.638-72.493 29.638-29.84 72-29.84 42.361 0 72.361 29.84 30 29.84 30 72.493 0 37.333-11.578 82.121Q559.177-733.092 521-618.334h-81.333Zm40.333 220q-34 0-57.833-23.833T398.334-480q0-34 23.833-58.166Q446-562.333 480-562.333t58.166 24.325q24.167 24.325 24.167 58.008 0 34-24.325 57.833T480-398.334Z",
+                path: presence_predictions_icon,
                 fillColor: "#8E44AD",
                 fillOpacity: 1,
                 strokeColor: "#5B2C6F",
@@ -130,6 +94,47 @@
               map: map,
             }),
         {% endfor %}];
+
+        // Create the Recenter button
+        const recenterButton = document.getElementById("recenterButton");
+        recenterButton.addEventListener("click", () => {
+          map.setCenter(new google.maps.LatLng({{ center[0] }}, {{ center[1] }}));
+        });
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(recenterButton);
+
+        // Create the map zoom buttons
+        const zoomOutButton = document.getElementById("zoomOutButton");
+        zoomOutButton.addEventListener("click", () => {
+          if (map.getZoom() > {{ zoomLevelMin }}) map.setZoom(map.getZoom() - 1);
+          if (map.getZoom() <= {{ zoomLevelMin }}) zoomOutButton.disabled = true;
+          if (map.getZoom() < {{ zoomLevelMax }}) zoomInButton.disabled = false;
+        });
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomOutButton);
+        
+        const zoomInButton = document.getElementById("zoomInButton");
+        zoomInButton.addEventListener("click", () => {
+          if (map.getZoom() < {{ zoomLevelMax }}) map.setZoom(map.getZoom() + 1);
+          if (map.getZoom() >= {{ zoomLevelMax }}) zoomInButton.disabled = true;
+          if (map.getZoom() > {{ zoomLevelMin }}) zoomOutButton.disabled = false;
+        });
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomInButton);
+
+        // Create the heatmap size buttons
+        const heatPlusButton = document.getElementById("heatPlusButton");
+        heatPlusButton.addEventListener("click", () => {
+          if (heatmap_markers.get("radius") > {{ heatmapRadiusMin}}) heatmap_markers.set("radius", heatmap_markers.get("radius") - 4);
+          if (heatmap_markers.get("radius") <= {{ heatmapRadiusMin}}) heatPlusButton.disabled = true;
+          if (heatmap_markers.get("radius") < {{ heatmapRadiusMax}}) heatMinusButton.disabled = false;
+        });
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(heatPlusButton);
+        
+        const heatMinusButton = document.getElementById("heatMinusButton");
+        heatMinusButton.addEventListener("click", () => {
+          if (heatmap_markers.get("radius") < {{ heatmapRadiusMax}}) heatmap_markers.set("radius", heatmap_markers.get("radius") + 4);
+          if (heatmap_markers.get("radius") >= {{ heatmapRadiusMax}}) heatMinusButton.disabled = true;
+          if (heatmap_markers.get("radius") > {{ heatmapRadiusMin}}) heatPlusButton.disabled = false;
+        });
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(heatMinusButton);
 
       }
 
