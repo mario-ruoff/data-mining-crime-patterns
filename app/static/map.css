@@ -15,7 +15,26 @@
     margin: 0;
     padding: 0;
   }
-  
+
+  .dark-panel {
+    background-color: #333;
+    border: 2px solid #333;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    color: #fff;
+    margin: 8px;
+    padding: 8px 12px;
+  }
+  .panel-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    line-height: 2.5;
+  }
+  .panel-icon {
+    margin-right: 8px;
+  }
+
   .dark-button {
     width: 40px;
     height: 40px;
@@ -25,7 +44,7 @@
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     color: #fff;
     cursor: pointer;
-    margin: 6px 4px;
+    margin: 8px;
     padding: 0;
   }
   .dark-button:hover:enabled {
