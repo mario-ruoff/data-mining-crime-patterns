@@ -36,13 +36,14 @@ class ChicagoCrimes:
         self.num_clusters = len(self.current_results)
         return self.current_results
     
-    def get_crimes(self, k=2):
+    def get_crimes(self, k=2, filter=['ASSAULT']):
+        filter_string = ', '.join(f"'{x}'" for x in filter)
 
         db_connection = sqlite3.connect(self.db_file)
         cursor = db_connection.cursor()
-        query = '''
+        query = f'''
             SELECT latitude,longitude, date, primary_type from crimes
-            WHERE arrest=0 and primary_type='ASSAULT' and location_description='STREET'
+            WHERE arrest=0 and primary_type in ({filter_string}) and location_description='STREET'
             ORDER BY date
             LIMIT 10000
             '''

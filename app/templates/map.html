@@ -30,7 +30,7 @@
         <i class="fa-solid fa-maximize"></i>
       </button>
       <div id="crimeTypePanel" class="dark-panel">
-        <h2>Select Crime Type</h2>
+        <h2>Filter Crime Types</h2>
         <select multiple id="crimeTypeDropdown">
           {% for crime_type in crime_types %}
             <option value="{{ crime_type }}">{{ crime_type }}</option>
@@ -50,8 +50,10 @@
     ></script>
 
     <script>
-      function initMap() {
+      // Pass the Flask variables to JavaScript
+      $SCRIPT_ROOT = {{ request.script_root|tojson }};
 
+      function initMap() {
         let map, heatmap_markers, police_stations_markers, presence_predictions_markers;
         const markerSize = 32;
       
@@ -125,8 +127,21 @@
         // Create the crime type dropdown
         const crimeTypePanel = document.getElementById("crimeTypePanel");
         const crimeTypeDropdown = document.getElementById("crimeTypeDropdown");
+        crimeTypeDropdown.querySelectorAll('option').forEach(option => option.selected = true);
         crimeTypeDropdown.addEventListener("change", () => {
-          console.log(Array.from(crimeTypeDropdown.selectedOptions).map(option => option.value))
+          crimeTypeDropdown.disabled = true;
+          const selectedOptions = Array.from(crimeTypeDropdown.selectedOptions).map(option => option.value);
+          $.getJSON($SCRIPT_ROOT + '/api/crime_types', {
+            filter: selectedOptions
+          }, function(data) {
+            heatmap_markers.setMap(null);
+            heatmap_markers = new google.maps.visualization.HeatmapLayer({
+              data: data.map(point => new google.maps.LatLng(point[0], point[1])),
+              map: map,
+              radius: {{ heatmapRadius }},
+            });
+            crimeTypeDropdown.disabled = false;
+          });
         });
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(crimeTypePanel);
 
