@@ -36,14 +36,14 @@ class ChicagoCrimes:
         self.num_clusters = len(self.current_results)
         return self.current_results
     
-    def get_crimes(self, k=2, filter=['ASSAULT']):
-        filter_string = ', '.join(f"'{x}'" for x in filter)
-
+    def get_crimes(self, k=2, crime_types=None, year=None):
+        crime_types_string = ', '.join(f"'{x}'" for x in crime_types)
+        
         db_connection = sqlite3.connect(self.db_file)
         cursor = db_connection.cursor()
         query = f'''
             SELECT latitude,longitude, date, primary_type from crimes
-            WHERE arrest=0 and primary_type in ({filter_string}) and location_description='STREET'
+            WHERE arrest=0 and primary_type IN ({crime_types_string}) AND location_description='STREET' AND year={year}
             ORDER BY date
             LIMIT 10000
             '''
@@ -51,11 +51,13 @@ class ChicagoCrimes:
         self.current_results = []
         raw_results = cursor.execute(query)
         result = raw_results.fetchone()
+        if result is None:
+            return self.current_results, None
 
         while(result is not None):
             self.current_results.append((result[0], result[1]))
             result = raw_results.fetchone()
-
+        
         record_array = np.array(self.current_results)
         locations = record_array[:, (0,1)]
 

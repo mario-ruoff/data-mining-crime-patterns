@@ -29,6 +29,10 @@
       <button id="heatMinusButton" class="dark-button button-top" title="Enlarge Heatmap">
         <i class="fa-solid fa-maximize"></i>
       </button>
+      <div id="timelinePanel" class="dark-panel">
+        <input id="timelineSlider" type="range" min="{{ min_year }}" max="{{ current_year }}" value="{{ current_year }}" step="1" oninput="this.nextElementSibling.value = this.value" onchange="performFilterRequest()">
+        <output id="timelineLabel">{{ current_year }}</output>
+      </div>
       <div id="crimeTypePanel" class="dark-panel">
         <h2>Filter Crime Types</h2>
         <select multiple id="crimeTypeDropdown">
@@ -44,19 +48,53 @@
       </div>
     </div>
 
+
     <script
       src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&callback=initMap&libraries=visualization&v=weekly"
       defer
     ></script>
 
     <script>
-      // Pass the Flask variables to JavaScript
-      $SCRIPT_ROOT = {{ request.script_root|tojson }};
-
-      function initMap() {
+      $(function() {
+        // Initialize base variables
+        $SCRIPT_ROOT = {{ request.script_root|tojson }};
         let map, heatmap_markers, police_stations_markers, presence_predictions_markers;
-        const markerSize = 32;
-      
+      });
+
+      // Perform a get request to the filter for different parameters
+      function performFilterRequest() {
+
+        // Disable filter controls while request is being made
+        crimeTypeDropdown.disabled = true;
+        timelineSlider.disabled = true;
+
+        // Get the year and crime types from the filter controls
+        const year = document.getElementById("timelineSlider").value;
+        const selectedOptions = Array.from(document.getElementById("crimeTypeDropdown").selectedOptions).map(option => option.value);
+        
+        // Make the filter request
+        $.getJSON($SCRIPT_ROOT + "/api/filter", {
+          year: year,
+          crime_types: selectedOptions
+        }, function(data) {
+          
+          // Remove old markers, create new ones
+          heatmap_markers.setMap(null);
+          heatmap_markers = new google.maps.visualization.HeatmapLayer({
+            data: data.map(point => new google.maps.LatLng(point[0], point[1])),
+            map: map,
+            radius: {{ heatmapRadius }},
+          });
+
+          // Enable filter controls after request is made
+          crimeTypeDropdown.disabled = false;
+          timelineSlider.disabled = false;
+        });
+      }
+
+      // Initialize the map
+      function initMap() {
+
         // Create the map
         map = new google.maps.Map(document.getElementById("map"), {
           zoom: {{ zoomLevel }},
@@ -77,6 +115,7 @@
         });
 
         // Create the police station markers
+        const markerSize = 32;
         police_stations_markers = [{% for marker in police_stations %}
             new google.maps.Marker({
               position: new google.maps.LatLng({{ marker[0] }}, {{ marker[1] }}),
@@ -124,24 +163,17 @@
         });
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomInButton);
 
+        // Create the timeline slider
+        const timelinePanel = document.getElementById("timelinePanel");
+        const timelineSlider = document.getElementById("timelineSlider");
+        map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(timelinePanel);
+
         // Create the crime type dropdown
         const crimeTypePanel = document.getElementById("crimeTypePanel");
         const crimeTypeDropdown = document.getElementById("crimeTypeDropdown");
         crimeTypeDropdown.querySelectorAll('option').forEach(option => option.selected = true);
         crimeTypeDropdown.addEventListener("change", () => {
-          crimeTypeDropdown.disabled = true;
-          const selectedOptions = Array.from(crimeTypeDropdown.selectedOptions).map(option => option.value);
-          $.getJSON($SCRIPT_ROOT + '/api/crime_types', {
-            filter: selectedOptions
-          }, function(data) {
-            heatmap_markers.setMap(null);
-            heatmap_markers = new google.maps.visualization.HeatmapLayer({
-              data: data.map(point => new google.maps.LatLng(point[0], point[1])),
-              map: map,
-              radius: {{ heatmapRadius }},
-            });
-            crimeTypeDropdown.disabled = false;
-          });
+          performFilterRequest();
         });
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(crimeTypePanel);
 
@@ -156,7 +188,7 @@
           if (heatmap_markers.get("radius") <= {{ heatmapRadiusMin}}) heatPlusButton.disabled = true;
           if (heatmap_markers.get("radius") < {{ heatmapRadiusMax}}) heatMinusButton.disabled = false;
         });
-        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(heatPlusButton);
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatPlusButton);
         
         const heatMinusButton = document.getElementById("heatMinusButton");
         heatMinusButton.addEventListener("click", () => {
@@ -164,7 +196,7 @@
           if (heatmap_markers.get("radius") >= {{ heatmapRadiusMax}}) heatMinusButton.disabled = true;
           if (heatmap_markers.get("radius") > {{ heatmapRadiusMin}}) heatPlusButton.disabled = false;
         });
-        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(heatMinusButton);
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(heatMinusButton);
 
       }
 

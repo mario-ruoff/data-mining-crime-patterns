@@ -13,6 +13,10 @@ body {
   padding: 0;
 }
 
+h2 {
+  margin-top: 4pt;
+}
+
 .dark-panel {
   background-color: #333;
   border: 2px solid #333;
@@ -67,4 +71,12 @@ body {
 #crimeTypeDropdown {
   height: 300px;
   border: 0px solid black;
+}
+
+#timelineSlider {
+  width: 500px;
+}
+#timelineLabel {
+  font-size: 16px;
+  margin: 8px;
 }

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 from dotenv import load_dotenv
 import os
 from database.clusters import ChicagoCrimes
@@ -7,15 +7,16 @@ from database.clusters import ChicagoCrimes
 load_dotenv()
 app = Flask(__name__)
 title = "Chicago Crime Map"
+current_year = 2023
+min_year = 2001
 data = ChicagoCrimes('../database/crimes.db')
 stations = data.get_police_stations()
 crime_types = data.get_crime_types()
-crimes, clusters = data.get_crimes(filter=crime_types)
+crimes, clusters = data.get_crimes(crime_types=crime_types, year=current_year)
 
 # Set up main route
 @app.route("/")
 def load_map():
-    
     return render_template(
         "map.html",
         title=title,
@@ -31,11 +32,14 @@ def load_map():
         heatmap=crimes,
         police_stations=stations,
         presence_predictions=clusters,
+        current_year=current_year,
+        min_year=min_year,
     )
 
-# Create route to filter by crime type
-@app.route("/api/crime_types")
-def filter_crime_types():
-    filter = request.args.getlist("filter[]")
-    crimes, clusters = data.get_crimes(filter=filter)
+# Create route to filter by different parameters
+@app.route("/api/filter")
+def filter():
+    crime_types = request.args.getlist("crime_types[]")
+    year = request.args.get("year", 0 , type=int)
+    crimes, clusters = data.get_crimes(crime_types=crime_types, year=year)
     return crimes
