@@ -1,68 +1,70 @@
-/* 
- * Always set the map height explicitly to define the size of the div element
- * that contains the map. 
- */
- #map {
-    height: 100%;
-  }
-  
-  /* 
-   * Optional: Makes the sample page fill the window. 
-   */
-  html,
-  body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
+#map {
+  height: 100%;
+}
 
-  .dark-panel {
-    background-color: #333;
-    border: 2px solid #333;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    color: #fff;
-    margin: 8px;
-    padding: 8px 12px;
-  }
-  .panel-item {
-    display: flex;
-    align-items: center;
-    font-size: 14px;
-    line-height: 2.5;
-  }
-  .panel-icon {
-    margin-right: 8px;
-  }
+:root {
+  color-scheme: dark;
+}
 
-  .dark-button {
-    width: 40px;
-    height: 40px;
-    background-color: #333;
-    border: 2px solid #333;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    color: #fff;
-    cursor: pointer;
-    margin: 8px;
-    padding: 0;
-  }
-  .dark-button:hover:enabled {
-    background-color: #444;
-    border: 2px solid #444;
-  }
-  .dark-button:disabled {
-    box-shadow: none;
-    color: #999;
-    cursor: default;
-  }
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 
-  .button-bottom {
-    border-radius: 0 0 8px 8px;
-    margin-top: 0;
-  }
-  .button-top {
-    border-radius: 8px 8px 0 0;
-    margin-bottom: 0;
-    border-bottom: 1px solid #555;
-  }
+.dark-panel {
+  background-color: #333;
+  border: 2px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  margin: 8px;
+  padding: 8px 12px;
+}
+.panel-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  line-height: 2.5;
+}
+.panel-icon {
+  margin-right: 8px;
+}
+
+.dark-button {
+  width: 40px;
+  height: 40px;
+  background-color: #333;
+  border: 2px solid #333;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  cursor: pointer;
+  margin: 8px;
+  padding: 0;
+}
+.dark-button:hover:enabled {
+  background-color: #444;
+  border: 2px solid #444;
+}
+.dark-button:disabled {
+  box-shadow: none;
+  color: #999;
+  cursor: default;
+}
+
+.button-bottom {
+  border-radius: 0 0 8px 8px;
+  margin-top: 0;
+}
+.button-top {
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid #555;
+}
+
+#crimeTypeDropdown {
+  height: 300px;
+  border: 0px solid black;
+}

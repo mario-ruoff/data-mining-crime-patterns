@@ -4,6 +4,7 @@
   <head>
     <title>{{ title }}</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='map.css') }}">
     <script src="{{ url_for('static', filename='map-style.js') }}"></script>
@@ -12,7 +13,7 @@
   <body>
     <div id="map"></div>
     
-    <div id="map-controls">
+    <div id="map-controls" style="display: none">
       <button id="recenterButton" class="dark-button" title="Recenter Map">
         <i class="fa-solid fa-arrows-to-dot"></i>
       </button>
@@ -28,6 +29,14 @@
       <button id="heatMinusButton" class="dark-button button-top" title="Enlarge Heatmap">
         <i class="fa-solid fa-maximize"></i>
       </button>
+      <div id="crimeTypePanel" class="dark-panel">
+        <h2>Select Crime Type</h2>
+        <select multiple id="crimeTypeDropdown">
+          {% for crime_type in crime_types %}
+            <option value="{{ crime_type }}">{{ crime_type }}</option>
+          {% endfor %}
+        </select>
+      </div>
       <div id="legend" class="dark-panel">
         <h2>Marker Legend</h2>
         <div class="panel-item"><img class="panel-icon" src="{{ url_for('static', filename='policeStation.svg') }}" width="24" height="24">Police Stations</div>
@@ -112,6 +121,14 @@
           if (map.getZoom() > {{ zoomLevelMin }}) zoomOutButton.disabled = false;
         });
         map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(zoomInButton);
+
+        // Create the crime type dropdown
+        const crimeTypePanel = document.getElementById("crimeTypePanel");
+        const crimeTypeDropdown = document.getElementById("crimeTypeDropdown");
+        crimeTypeDropdown.addEventListener("change", () => {
+          console.log(Array.from(crimeTypeDropdown.selectedOptions).map(option => option.value))
+        });
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(crimeTypePanel);
 
         // Create the legend
         const legend = document.getElementById("legend");

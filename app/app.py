@@ -10,6 +10,7 @@ title = "Chicago Crime Map"
 data = ChicagoCrimes('../database/crimes.db')
 stations = data.get_police_stations()
 crimes, clusters = data.get_crimes()
+crime_types = data.get_crime_types()
 
 # Set up main route
 @app.route("/")
@@ -26,19 +27,16 @@ def load_map():
         heatmapRadius=20,
         heatmapRadiusMin=0,
         heatmapRadiusMax=100,
+        crime_types=crime_types,
         heatmap=crimes,
         police_stations=stations,
-        presence_predictions=clusters
+        presence_predictions=clusters,
     )
 
-# Set up main route
-@app.route("/refresh")
-def load_map_fresh():
-
-
-    stations = data.get_police_stations()
-    crimes, clusters = data.get_crimes(2)
-
+# Create route to filter by crime type
+@app.route("/crime/<crime_type>")
+def load_crime(crime_type):
+    crimes, clusters = data.get_crimes(crime_type)
     return render_template(
         "map.html",
         title=title,
@@ -50,7 +48,8 @@ def load_map_fresh():
         heatmapRadius=20,
         heatmapRadiusMin=0,
         heatmapRadiusMax=100,
+        crime_types=crime_types,
         heatmap=crimes,
         police_stations=stations,
-        presence_predictions=clusters
+        presence_predictions=clusters,
     )
