@@ -48,12 +48,16 @@ class ChicagoCrimes:
             LIMIT 10000
             '''
         
+        # Get crimes into numpy array
         self.current_results = []
         raw_results = cursor.execute(query)
         result = raw_results.fetchone()
+
+        # Abort appending if no results
         if result is None:
             return self.current_results, None
 
+        # Append results to array
         while(result is not None):
             self.current_results.append((result[0], result[1]))
             result = raw_results.fetchone()
@@ -61,6 +65,11 @@ class ChicagoCrimes:
         record_array = np.array(self.current_results)
         locations = record_array[:, (0,1)]
 
+        # Abort clustering if not enough results
+        if len(locations) < k:
+            return self.current_results, None
+
+        # Apply clustering
         k = KMeans(n_clusters=k, n_init='auto')
         k.fit(locations)
         clusters = k.cluster_centers_
