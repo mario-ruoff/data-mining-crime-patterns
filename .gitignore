@@ -195,3 +195,6 @@ pyrightconfig.json
 # Database files
 *.db
 database/police.tsv
+Lib
+Scripts
+pyvenv.cfg

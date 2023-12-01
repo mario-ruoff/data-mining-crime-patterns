@@ -1,5 +1,4 @@
 import numpy as np
-import os
 import sqlite3
 
 from sklearn.cluster import KMeans
@@ -9,11 +8,6 @@ class ChicagoCrimes:
         self.db_file = db_file
         self.current_results = []
         self.num_clusters = 0
-
-        # add logic here to preprocess the database
-        # here we should try to go through the crimes
-        # database in order to figure out outliers,
-        # this will help with clustering later
         
     def get_police_stations(self):
 
@@ -23,7 +17,6 @@ class ChicagoCrimes:
 
         query = '''
             SELECT latitude,longitude from police
-            LIMIT 100
             '''
         
         self.current_results = []
@@ -36,16 +29,17 @@ class ChicagoCrimes:
         self.num_clusters = len(self.current_results)
         return self.current_results
     
-    def get_crimes(self, k=2, crime_types=None, year=None):
+    def get_crimes(self, k=2, crime_types=None, year=2023, num_crimes=0):
         crime_types_string = ', '.join(f"'{x}'" for x in crime_types)
+        record_limter = '' if num_crimes == 0 else 'LIMIT 10000'
         
         db_connection = sqlite3.connect(self.db_file)
         cursor = db_connection.cursor()
         query = f'''
             SELECT latitude,longitude, date, primary_type from crimes
-            WHERE arrest=0 and primary_type IN ({crime_types_string}) AND location_description='STREET' AND year={year}
-            ORDER BY date
-            LIMIT 10000
+            WHERE arrest=1 and primary_type IN ({crime_types_string}) AND location_description='STREET' AND year={year}
+            ORDER BY random()
+            {record_limter}
             '''
         
         # Get crimes into numpy array

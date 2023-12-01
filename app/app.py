@@ -12,7 +12,13 @@ min_year = 2001
 data = ChicagoCrimes('../database/crimes.db')
 stations = data.get_police_stations()
 crime_types = data.get_crime_types()
-crimes, clusters = data.get_crimes(crime_types=crime_types, year=current_year)
+
+if(len(crime_types) > 1): 
+    num_crimes = 10000
+else:
+    num_crimes = 0
+
+crimes, clusters = data.get_crimes(crime_types=crime_types, k=len(stations), year=current_year, num_crimes=num_crimes)
 
 # Set up main route
 @app.route("/")
