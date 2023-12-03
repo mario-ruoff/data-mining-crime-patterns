@@ -80,3 +80,24 @@ h2 {
   font-size: 16px;
   margin: 8px;
 }
+.toggle-button {
+  background-color: #333; /* Default color */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.toggle-button.state-1 {
+  background-color: #4CAF50; /* Green */
+}
+
+.toggle-button.state-2 {
+  background-color: #008CBA; /* Blue */
+}
+
+.toggle-button.state-3 {
+  background-color: #f44336; /* Red */
+}

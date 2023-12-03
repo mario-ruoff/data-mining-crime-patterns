@@ -51,8 +51,9 @@ def filter():
     year = request.args.get("year", 0 , type=int)
     n_clusters = request.args.get("n_clusters", 0 , type=int)
     crimes, clusters = data.get_crimes(crime_types=crime_types, year=year, k=n_clusters)
+    print(clusters)
     
     return {
         "crimes": crimes,
-        "clusters": clusters.tolist()
+        "clusters": clusters.tolist() if clusters is not None else []
     }
