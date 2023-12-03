@@ -1,7 +1,7 @@
 import numpy as np
 import sqlite3
 
-from database.kMeans4 import KMeans4
+from database.cluster_algorithms import KMeans4
 
 class ChicagoCrimes:
     def __init__(self, db_file) -> None:
@@ -64,9 +64,6 @@ class ChicagoCrimes:
             return self.current_results, None
 
         #Apply clustering
-        # k = KMeans(n_clusters=k, n_init='auto')
-        # k.fit(locations)
-        # clusters = k.cluster_centers_
         kmeans = KMeans4(n_clusters=k)
         clusters, centroids = kmeans.fit(locations)
 
