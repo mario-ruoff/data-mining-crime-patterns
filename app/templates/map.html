@@ -41,13 +41,23 @@
           {% endfor %}
         </select>
       </div>
+      <div id="clusteringPanel" class="dark-panel">
+        <h2>Number of Clusters</h2>
+        <input id="clusteringSlider" type="range" min="1" max="{{ n_clusters }}" value="{{ n_clusters }}" step="1" oninput="this.nextElementSibling.value = this.value" onchange="performFilterRequest()">`
+        <output id="clusteringLabel">{{ n_clusters }}</output>
+      </div>
+      <div id="algorithmPanel" class="dark-panel">
+        <h2>Clustering Algorithm</h2>
+        <button id="toggleButton" class="toggle-button state-1">State 1</button>
+        <button id="toggleButton" class="toggle-button state-2">State 2</button>
+        <button id="toggleButton" class="toggle-button state-3">State 3</button>
+      </div>
       <div id="legend" class="dark-panel">
         <h2>Marker Legend</h2>
         <div class="panel-item"><img class="panel-icon" src="{{ url_for('static', filename='policeStation.svg') }}" width="24" height="24">Police Stations</div>
         <div class="panel-item"><img class="panel-icon" src="{{ url_for('static', filename='clusteringMarker.svg') }}" width="24" height="24">Presence Predictions</div>
       </div>
     </div>
-
 
     <script
       src="https://maps.googleapis.com/maps/api/js?key={{ google_api_key }}&callback=initMap&libraries=visualization&v=weekly"
@@ -66,28 +76,41 @@
 
         // Disable filter controls while request is being made
         crimeTypeDropdown.disabled = true;
+        clusteringSlider.disabled = true;
         timelineSlider.disabled = true;
 
         // Get the year and crime types from the filter controls
-        const year = document.getElementById("timelineSlider").value;
         const selectedOptions = Array.from(document.getElementById("crimeTypeDropdown").selectedOptions).map(option => option.value);
         
         // Make the filter request
         $.getJSON($SCRIPT_ROOT + "/api/filter", {
-          year: year,
+          year: timelineSlider.value,
+          n_clusters: clusteringSlider.value,
           crime_types: selectedOptions
         }, function(data) {
           
-          // Remove old markers, create new ones
+          // Remove old heatmap, create new one
           heatmap_markers.setMap(null);
           heatmap_markers = new google.maps.visualization.HeatmapLayer({
-            data: data.map(point => new google.maps.LatLng(point[0], point[1])),
+            data: data.crimes.map(point => new google.maps.LatLng(point[0], point[1])),
             map: map,
             radius: {{ heatmapRadius }},
           });
 
+          // Remove old presence prediction markers, create new ones
+          presence_predictions_markers.forEach(marker => marker.setMap(null));
+          presence_predictions_markers = data.clusters.map(point => new google.maps.Marker({
+            position: new google.maps.LatLng(point[0], point[1]),
+            icon: {
+              url: "{{ url_for('static', filename='clusteringMarker.svg') }}",
+              scaledSize: new google.maps.Size(32, 32)
+            },
+            map: map,
+          }));
+
           // Enable filter controls after request is made
           crimeTypeDropdown.disabled = false;
+          clusteringSlider.disabled = false;
           timelineSlider.disabled = false;
         });
       }
@@ -115,13 +138,12 @@
         });
 
         // Create the police station markers
-        const markerSize = 32;
         police_stations_markers = [{% for marker in police_stations %}
             new google.maps.Marker({
               position: new google.maps.LatLng({{ marker[0] }}, {{ marker[1] }}),
               icon: {
                 url: "{{ url_for('static', filename='policeStation.svg') }}",
-                scaledSize: new google.maps.Size(markerSize, markerSize)
+                scaledSize: new google.maps.Size(32, 32)
               },
               map: map,
             }),
@@ -133,7 +155,7 @@
               position: new google.maps.LatLng({{ marker[0] }}, {{ marker[1] }}),
               icon: {
                 url: "{{ url_for('static', filename='clusteringMarker.svg') }}",
-                scaledSize: new google.maps.Size(markerSize, markerSize)
+                scaledSize: new google.maps.Size(32, 32)
               },
               map: map,
             }),
@@ -176,6 +198,33 @@
           performFilterRequest();
         });
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(crimeTypePanel);
+
+        // Create the clustering slider
+        const clusteringPanel = document.getElementById("clusteringPanel");
+        const clusteringSlider = document.getElementById("clusteringSlider");
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(clusteringPanel);
+
+        // Create the algorithm toggle button
+        const algorithmPanel = document.getElementById("algorithmPanel");
+        const toggleButton = document.getElementById("toggleButton");
+        toggleButton.addEventListener("click", function() {
+          var btn = this;
+          
+          if (btn.classList.contains("state-1")) {
+            btn.classList.remove("state-1");
+            btn.classList.add("state-2");
+            btn.textContent = "State 2";
+          } else if (btn.classList.contains("state-2")) {
+            btn.classList.remove("state-2");
+            btn.classList.add("state-3");
+            btn.textContent = "State 3";
+          } else {
+            btn.classList.remove("state-3");
+            btn.classList.add("state-1");
+            btn.textContent = "State 1";
+          }
+        });
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(algorithmPanel);
 
         // Create the legend
         const legend = document.getElementById("legend");
