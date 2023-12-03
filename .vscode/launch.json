@@ -18,7 +18,7 @@
                 "run",
             ],
             "jinja": true,
-            "justMyCode": true
+            "justMyCode": false
         }
     ]
 }
