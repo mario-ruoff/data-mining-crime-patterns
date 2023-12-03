@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, render_template, request
 from dotenv import load_dotenv
 import os
 from database.clusters import ChicagoCrimes
@@ -12,13 +12,14 @@ min_year = 2001
 data = ChicagoCrimes('../database/crimes.db')
 stations = data.get_police_stations()
 crime_types = data.get_crime_types()
+n_clusters = len(stations)
 
 if(len(crime_types) > 1): 
     num_crimes = 10000
 else:
     num_crimes = 0
 
-crimes, clusters = data.get_crimes(crime_types=crime_types, k=len(stations), year=current_year, num_crimes=num_crimes)
+crimes, clusters = data.get_crimes(crime_types=crime_types, k=n_clusters, year=current_year, num_crimes=num_crimes)
 
 # Set up main route
 @app.route("/")
@@ -40,6 +41,7 @@ def load_map():
         presence_predictions=clusters,
         current_year=current_year,
         min_year=min_year,
+        n_clusters=n_clusters
     )
 
 # Create route to filter by different parameters
@@ -47,5 +49,10 @@ def load_map():
 def filter():
     crime_types = request.args.getlist("crime_types[]")
     year = request.args.get("year", 0 , type=int)
-    crimes, clusters = data.get_crimes(crime_types=crime_types, year=year)
-    return crimes
+    n_clusters = request.args.get("n_clusters", 0 , type=int)
+    crimes, clusters = data.get_crimes(crime_types=crime_types, year=year, k=n_clusters)
+    
+    return {
+        "crimes": crimes,
+        "clusters": clusters.tolist()
+    }

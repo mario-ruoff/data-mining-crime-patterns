@@ -76,7 +76,7 @@ h2 {
 #timelineSlider {
   width: 500px;
 }
-#timelineLabel {
+#timelineLabel, #clusteringLabel {
   font-size: 16px;
   margin: 8px;
 }
