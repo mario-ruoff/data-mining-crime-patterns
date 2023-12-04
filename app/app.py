@@ -19,7 +19,7 @@ if(len(crime_types) > 1):
 else:
     num_crimes = 0
 
-crimes, clusters = data.get_crimes(crime_types=crime_types, k=n_clusters, year=current_year, num_crimes=num_crimes, algorithm=1)
+crimes, clusters = data.get_crimes(crime_types=[crime_types[0]], k=n_clusters, year=current_year, num_crimes=num_crimes, algorithm=1)
 
 # Set up main route
 @app.route("/")

@@ -201,7 +201,7 @@
         // Create the crime type dropdown
         const crimeTypePanel = document.getElementById("crimeTypePanel");
         const crimeTypeDropdown = document.getElementById("crimeTypeDropdown");
-        crimeTypeDropdown.querySelectorAll('option').forEach(option => option.selected = true);
+        crimeTypeDropdown.options[0].selected = true;
         crimeTypeDropdown.addEventListener("change", () => {
           performFilterRequest();
         });
