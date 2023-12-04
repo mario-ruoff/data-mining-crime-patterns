@@ -36,12 +36,73 @@ class SpectralClustering:
     pass
 
 class DBSCAN:
-    pass
+    def __init__(self, eps=0.5, min_samples=5):
+        self.eps = eps
+        self.min_samples = min_samples
+        self.labels = []
+
+    def fit(self, X):
+        """
+        Fit the DBSCAN algorithm on dataset X
+        """
+        self.labels = [0]*len(X)
+        C = 0
+        
+        for P in range(0, len(X)):
+            if not (self.labels[P] == 0):
+                continue
+            
+            NeighborPts = self.region_query(X, P)
+            if len(NeighborPts) < self.min_samples:
+                self.labels[P] = -1
+            else:
+                C += 1
+                self.grow_cluster(X, P, NeighborPts, C)
+        
+    def grow_cluster(self, X, P, NeighborPts, C):
+        """
+        Grow a new cluster with label C from point P.
+        """
+        self.labels[P] = C
+        i = 0
+        while i < len(NeighborPts):    
+            Pn = NeighborPts[i]
+            if self.labels[Pn] == -1:
+                self.labels[Pn] = C
+            elif self.labels[Pn] == 0:
+                self.labels[Pn] = C
+                PnNeighborPts = self.region_query(X, Pn)
+                if len(PnNeighborPts) >= self.min_samples:
+                    NeighborPts = NeighborPts + PnNeighborPts
+            i += 1
+
+    def region_query(self, X, P):
+        """
+        Find neighbors of point P in dataset X
+        """
+        neighbors = []
+        for Pn in range(0, len(X)):
+            if np.linalg.norm(X[P] - X[Pn]) < self.eps:
+                neighbors.append(Pn)
+        return neighbors
+
+    def get_clusters(self):
+        """
+        Retrieve the cluster labels.
+        """
+        return self.labels
         
 if __name__ == '__main__':
     data = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
     kmeans = KMeans4(3)
+    dbscan = DBSCAN()
 
     cluster_centers, labels = kmeans.fit(data)
+    dbscan.fit(data)
+
     print(cluster_centers)
     print(labels)
+
+    print("")
+    
+    print(dbscan.get_clusters())

@@ -28,11 +28,36 @@ For this application, we have implemented three separate clustering algorithms: 
 
 This clustering algorithm, first formally proposed by Lloyd in 1982 [5](https://cs.nyu.edu/~roweis/csc2515-2006/readings/lloyd57.pdf), is the defacto standard for clustering algorithms in machine learning. K-Means is easy to implement, although computationally hard through a technique known as Lloyd's algorithm. In Lloyd's algorithm, a number of entries in the dataset, K, are selected at random from the entire set. Then, a distance metric, often the Euclidean or Manhattan distance metrics are applied to each point in the data to each of the cluster centers selected earlier. The point is "assigned" to the cluster with the shortest distance. After each point is assigned, the centers of each cluster are moved to the mean of the points in the cluster. Then the process is repeated until either the centers no longer move or a specified number of iterations have passed.
 
+LLoyd's Algorithm (in a Python pseudo-code style)
+
+```python
+
+def LloydsAlgorithm(data, k, max_iterations):
+    
+    # Select k rows from the data
+    centers = [select random k rows for row in data]
+    clusters = []
+
+    while i < max_iterations:
+        # Assign a row to the closest center
+        for row in data:
+            clusters[center].add(row if euclidian_distance(row) < all_other_centers)
+
+        # Update the centers to the mean of the points in the cluster
+        for cluster in clusters:
+            centers[cluster] = mean(cluster[cluster])
+
+        # Repeat until the centers no longer move
+        if centers not Move():
+            break
+```
+[Figure 1: Pseudocode for Lloyd's algorithm]
+
 The primary advantage with this algorithm is its simplicity of implementation along with its wide application. However, it is an NP-hard problem in higher dimensions, and other clustering algorithms have outpaced it in performance and it is not guaranteed to find the optimum distribution. Furthermore, the initial cluster centers and the value of **K** used affect it greatly. Still, it is an exceptionally effective algorithm and worthy of consideration of clustering technique.
 
 ### Density-based Spatial Clustering of Applications with Noise (DBSCAN)
 
-
+### Spectral Clustering
 
 ## Analysis
 
