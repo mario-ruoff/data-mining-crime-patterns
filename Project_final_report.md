@@ -21,7 +21,18 @@ To plot this data, we are utilizing the Chicago Crime Dataset[3]. This dataset, 
 ![Figure 1 - The reduced Chicago Crimes Dataset](./images/dataset.png)
 
 
-The only preprocessing work we had to perform on this dataset was to reduce certain dimensions that were unnecessary or redundant. Additionally, we chose to only examine crime statistics on a single-year basis. This is partially due to the sheer size of the record list on the application, but also to isolate the changing trends in demographics, affluence, and structure that may affect results beyond simple police station location. In the end, we reduced the dataset down to the following dimensions.
+The only preprocessing work we had to perform on this dataset was to reduce certain dimensions that were unnecessary or redundant. Additionally, we chose to only examine crime statistics on a single-year basis. This is partially due to the sheer size of the record list on the application, but also to isolate the changing trends in demographics, affluence, and structure that may affect results beyond simple police station location. In the end, we reduced the dataset down to the following dimensions:
+
+- Datetime of the crime committed
+- Year crime was committed (seemingly redundant, but allows for easier retrieval of the data by year).
+- Crime's Primary Type - One of 33 different primary crime types that the user can filter on.
+- Description - A description of the crime committed.
+- Location Description - A short description of the location where the crime was committed: e.g. 'Street' or 'Residence'.
+- Was an arrest made?
+- Is this considered a domestic crime?
+- Latitude/Longitude where the crime was committed.
+
+
 
 ## Clustering Algorithms
 
@@ -64,11 +75,19 @@ The primary advantage with this algorithm is its simplicity of implementation al
 
 ### Spectral Clustering
 
-## Chicago 
+## Application
 
 ![Application Screenshot](./images/app_overview.png)
 
 [Figure 2 - A screenshot of the application]
+
+Figure 2 shows an overview of our application. It is based on the Flask web framework written in the Python programming language. The application is designed to run locally on the user's computer and connects to a SQLite3 database. This database was converted from the raw Tab-Separated Value (TSV) file provided by the City of Chicago [[3]](https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2). The database was not reduced in any way from its original format. We chose the TSV version of the data due to issues importing the data from the CSV file provided by the City of Chicago website. In order to reduce the sheer quantity of data that could be pulled from the database to the application, our application only queries the database for latitudes and longitudes of crimes that fit the criteria requested. This data is pulled from a separate view of the database that only contains the dimensions mentioned in section X. 
+
+The colored heatmap represents the quantity of crimes committed in an area. Red values indicate a greater number of crimes committed in that area over orange, yellow, and green areas.
+
+### Clustering Techniques
+
+On the left side of the application, the user has the option to run one of the three clustering techniques on the data.
 
 ## Analysis
 
