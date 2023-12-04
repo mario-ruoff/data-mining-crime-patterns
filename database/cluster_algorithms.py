@@ -86,41 +86,61 @@ class DBSCAN:
     def __init__(self, eps=0.5, min_samples=5):
         self.eps = eps
         self.min_samples = min_samples
-        self.labels = []
 
     def fit(self, X):
         """
         Fit the DBSCAN algorithm on dataset X
         """
-        self.labels = [0]*len(X)
+        # Number of points
+        n_points = X.shape[0]
+
+        # Labels of the points
+        labels = [-1] * n_points
+
+        # Visited points
+        visited = [False] * n_points
+
+        # Cluster label
         C = 0
-        
-        for P in range(0, len(X)):
-            if not (self.labels[P] == 0):
+
+        # Iterate over points
+        for P in range(n_points):
+            if visited[P]:
                 continue
-            
-            NeighborPts = self.region_query(X, P)
-            if len(NeighborPts) < self.min_samples:
-                self.labels[P] = -1
+
+            # Mark point as visited
+            visited[P] = True
+
+            # Find neighbors
+            neighbors = self.region_query(X, P)
+
+            if len(neighbors) < self.min_samples:
+                # Mark as noise
+                labels[P] = -1
             else:
+                # Start a new cluster
                 C += 1
-                self.grow_cluster(X, P, NeighborPts, C)
-        
-    def grow_cluster(self, X, P, NeighborPts, C):
+                self.expand_cluster(X, labels, P, neighbors, C, visited)
+
+        return self.calculate_cluster_means(X, labels), labels
+
+    def expand_cluster(self, X, labels, P, neighbors, C, visited):
         """
-        Grow a new cluster with label C from point P.
+        Expand the new cluster with label C from point P.
         """
-        self.labels[P] = C
+        labels[P] = C
         i = 0
-        while i < len(NeighborPts):    
-            Pn = NeighborPts[i]
-            if self.labels[Pn] == -1:
-                self.labels[Pn] = C
-            elif self.labels[Pn] == 0:
-                self.labels[Pn] = C
-                PnNeighborPts = self.region_query(X, Pn)
-                if len(PnNeighborPts) >= self.min_samples:
-                    NeighborPts = NeighborPts + PnNeighborPts
+        while i < len(neighbors):
+            Pn = neighbors[i]
+            if not visited[Pn]:
+                visited[Pn] = True
+                PnNeighbors = self.region_query(X, Pn)
+
+                if len(PnNeighbors) >= self.min_samples:
+                    neighbors = neighbors + PnNeighbors
+
+            if labels[Pn] == -1:
+                labels[Pn] = C
             i += 1
 
     def region_query(self, X, P):
@@ -128,16 +148,18 @@ class DBSCAN:
         Find neighbors of point P in dataset X
         """
         neighbors = []
-        for Pn in range(0, len(X)):
+        for Pn in range(len(X)):
             if np.linalg.norm(X[P] - X[Pn]) < self.eps:
                 neighbors.append(Pn)
         return neighbors
+    
+    def calculate_cluster_means(self, X, labels):
+        unique_labels = set(labels)
+        if -1 in unique_labels:
+            unique_labels.remove(-1)  # Remove noise label if present
 
-    def get_clusters(self):
-        """
-        Retrieve the cluster labels.
-        """
-        return self.labels
+        cluster_means = np.array([X[labels == label].mean(axis=0) for label in unique_labels])
+        return cluster_means
         
 if __name__ == '__main__':
     data = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])

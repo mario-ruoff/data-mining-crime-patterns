@@ -19,7 +19,7 @@ crime_types = data.get_crime_types()
 n_clusters = len(stations)
 DEBUG = False
 
-algorithms = dict({1: "KMeans", 2: "Spectral"}) #, 3: "DBSCAN"})
+algorithms = dict({1: "KMeans", 2: "Spectral", 3: "DBSCAN"})
 
 if(len(crime_types) > 1): 
     num_crimes = 10000
@@ -84,5 +84,5 @@ def filter():
     
     return {
         "crimes": crimes,
-        "clusters": clusters.tolist() if clusters is not None else []
+        "clusters": clusters.tolist()
     }
