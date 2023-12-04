@@ -1,6 +1,10 @@
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+import time
+
 from flask import Flask, render_template, request
 from dotenv import load_dotenv
-import os
 from database.data_manager import ChicagoCrimes
 
 # Initialize app
@@ -13,13 +17,39 @@ data = ChicagoCrimes('../database/crimes.db')
 stations = data.get_police_stations()
 crime_types = data.get_crime_types()
 n_clusters = len(stations)
+DEBUG = False
+
+algorithms = dict({1: "KMeans", 2: "Spectral"}) #, 3: "DBSCAN"})
 
 if(len(crime_types) > 1): 
     num_crimes = 10000
 else:
     num_crimes = 0
 
-crimes, clusters = data.get_crimes(crime_types=[crime_types[0]], k=n_clusters, year=current_year, num_crimes=num_crimes, algorithm=1)
+# This section of code is not run when the application is running. It's to help provide metrics for the report.
+if DEBUG:
+    x = []
+    y = []
+    for a in algorithms:
+        algorithm = algorithms[a]
+        start_time = time.time()
+        crimes, clusters = data.get_crimes(crime_types=crime_types, k=n_clusters, year=2022, num_crimes=0, algorithm=a)
+        end_time = time.time()
+        x.append(algorithm)
+        y.append(np.round(end_time - start_time, decimals=2))
+    
+    figure, axis = plt.subplots()
+    bar_colors = ['tab:red', 'tab:blue', 'tab:green']
+    axis.bar(x, y, color=bar_colors)
+
+    axis.set_ylabel('Time to cluster (seconds)')
+    axis.set_title('Performance Evaluation of different clustering algorithms.')
+    plt.show()
+    plt.savefig('./fig.png')
+
+    exit()
+
+crimes, clusters = data.get_crimes(crime_types=crime_types, k=n_clusters, year=current_year, num_crimes=num_crimes)
 
 # Set up main route
 @app.route("/")
@@ -48,12 +78,11 @@ def load_map():
 @app.route("/api/filter")
 def filter():
     crime_types = request.args.getlist("crime_types[]")
-    algorithm = int(request.args.get("algorithm", "", type=str)[-1])
     year = request.args.get("year", 0 , type=int)
     n_clusters = request.args.get("n_clusters", 0 , type=int)
-    crimes, clusters = data.get_crimes(crime_types=crime_types, year=year, k=n_clusters, algorithm=algorithm)
+    crimes, clusters = data.get_crimes(crime_types=crime_types, year=year, k=n_clusters)
     
     return {
         "crimes": crimes,
-        "clusters": clusters.tolist()
+        "clusters": clusters.tolist() if clusters is not None else []
     }
