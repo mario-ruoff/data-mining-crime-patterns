@@ -93,7 +93,7 @@
           n_clusters: clusteringSlider.value,
           crime_types: selectedOptions
         }, function(data) {
-          
+          console.log(data);
           // Remove old heatmap, create new one
           heatmap_markers.setMap(null);
           heatmap_markers = new google.maps.visualization.HeatmapLayer({

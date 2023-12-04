@@ -1,7 +1,7 @@
 import numpy as np
 import sqlite3
 
-from database.cluster_algorithms import KMeans4, DBSCAN
+from database.cluster_algorithms import KMeans4, DBSCAN, SpectralClustering
 
 class ChicagoCrimes:
     def __init__(self, db_file) -> None:
@@ -29,7 +29,7 @@ class ChicagoCrimes:
         self.num_clusters = len(self.current_results)
         return self.current_results
     
-    def get_crimes(self, k=2, crime_types=None, year=2023, num_crimes=0):
+    def get_crimes(self, k=2, crime_types=None, year=2023, num_crimes=0, algorithm=1):
         crime_types_string = ', '.join(f"'{x}'" for x in crime_types)
         record_limter = '' if num_crimes == 0 else 'LIMIT 10000'
         
@@ -49,7 +49,7 @@ class ChicagoCrimes:
 
         # Abort appending if no results
         if result is None:
-            return self.current_results, None
+            return self.current_results, np.array([])
 
         # Append results to array
         while(result is not None):
@@ -61,11 +61,19 @@ class ChicagoCrimes:
 
         # Abort clustering if not enough results
         if len(locations) < k:
-            return self.current_results, None
+            return self.current_results, np.array([])
 
         #Apply clustering
-        kmeans = KMeans4(n_clusters=k)
-        clusters, centroids = kmeans.fit(locations)
+        match algorithm:
+            case 1:
+                model = KMeans4(n_clusters=k)
+            case 2:
+                model = SpectralClustering(n_clusters=k)
+            case 3:
+                model = DBSCAN()
+            case _:
+                model = KMeans4(n_clusters=k)
+        clusters, centroids = model.fit(locations)
 
         # Return the dataset requested and the cluster centers for that dataset
         return self.current_results, clusters

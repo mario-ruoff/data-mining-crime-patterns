@@ -33,7 +33,45 @@ class KMeans4:
         return cluster_centroids, labels
 
 class SpectralClustering:
-    pass
+    def __init__(self, n_clusters, affinity='rbf', gamma=1.0):
+        self.n_clusters = n_clusters
+        self.affinity = affinity
+        self.gamma = gamma
+
+    def fit(self, data):
+        # Compute the affinity matrix
+        if self.affinity == 'rbf':
+            sq_dists = np.sum((data[:, np.newaxis] - data[np.newaxis, :]) ** 2, axis=-1)
+            affinity_matrix = np.exp(-self.gamma * sq_dists)
+        else:
+            raise ValueError("Unknown affinity type")
+
+        # Construct the Laplacian matrix
+        D = np.diag(np.sum(affinity_matrix, axis=1))
+        L = D - affinity_matrix
+
+        # Compute the first k eigenvectors
+        eigenvalues, eigenvectors = self.compute_eigenvectors(L, self.n_clusters)
+
+        # Transform the data
+        X_transformed = eigenvectors.real
+
+        # Cluster using KMeans
+        kmeans = KMeans4(self.n_clusters)
+        clusters, labels = kmeans.fit(X_transformed)
+
+        return clusters, labels
+
+    def compute_eigenvectors(self, L, k):
+        # Simple power iteration algorithm for eigenvector computation
+        n, _ = L.shape
+        eigenvectors = np.random.rand(n, k)
+        for _ in range(10):  # number of iterations
+            eigenvectors = np.dot(L, eigenvectors)
+            eigenvectors = np.apply_along_axis(lambda v: v / np.linalg.norm(v), 0, eigenvectors)
+        eigenvalues = np.diag(np.dot(np.dot(eigenvectors.T, L), eigenvectors))
+        return eigenvalues, eigenvectors
+
 
 class DBSCAN:
     def __init__(self, eps=0.5, min_samples=5):
