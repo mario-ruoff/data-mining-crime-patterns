@@ -32,6 +32,8 @@ class KMeans4:
 
         return cluster_centroids, labels
 
+class SpectralClustering:
+    pass
 
 class DBSCAN:
     pass
