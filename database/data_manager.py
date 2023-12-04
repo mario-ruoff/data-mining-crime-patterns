@@ -63,6 +63,11 @@ class ChicagoCrimes:
         if len(locations) < k:
             return self.current_results, np.array([])
 
+        # Convert lat/lng to meters for clustering
+        converted_locations = self.lat_lng_to_meters(locations)
+        print(locations)
+        print(converted_locations)
+
         #Apply clustering
         match algorithm:
             case 1:
@@ -73,7 +78,12 @@ class ChicagoCrimes:
                 model = DBSCAN()
             case _:
                 model = KMeans4(n_clusters=k)
-        clusters, centroids = model.fit(locations)
+        converted_clusters, _ = model.fit(converted_locations)
+
+        # Convert centroids back to lat/lng
+        clusters = self.meters_to_lat_lng(converted_clusters, np.mean(locations[:, 0]))
+        print(converted_clusters)
+        print(clusters)
 
         # Return the dataset requested and the cluster centers for that dataset
         return self.current_results, clusters
@@ -99,6 +109,28 @@ class ChicagoCrimes:
             first = query_task.fetchone()
 
         return results
+    
+    def lat_lng_to_meters(self, data):
+        # Mean latitude for the dataset
+        mean_lat = np.mean(data[:, 0])
+
+        # Convert latitude to meters (1 degree latitude = approx 111 km)
+        lat_in_meters = data[:, 0] * 111
+
+        # Convert longitude to meters (1 degree longitude = 111 km * cos(latitude))
+        lng_in_meters = data[:, 1] * 111 * np.cos(np.radians(mean_lat))
+
+        return np.column_stack((lat_in_meters, lng_in_meters))
+
+    def meters_to_lat_lng(self, data, reference_latitude):
+        # Convert latitude from meters back to degrees
+        lat = data[:, 0] / 111
+
+        # Convert longitude from meters back to degrees
+        # Need to divide by the cosine of the reference latitude
+        lng = data[:, 1] / (111 * np.cos(np.radians(reference_latitude)))
+
+        return np.column_stack((lat, lng))
     
 if __name__ == '__main__':
     crimes_test = ChicagoCrimes('./crimes.db')
