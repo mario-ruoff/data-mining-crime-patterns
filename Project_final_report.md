@@ -24,7 +24,6 @@ For a thorough examination of crime, we are utilizing the Chicago Crime Dataset[
 
 ![Figure 1 - The reduced Chicago Crimes Dataset](./images/dataset.png)
 
-
 The only preprocessing work we had to perform on this dataset was to reduce certain dimensions that were unnecessary or redundant. Additionally, we chose to only examine crime statistics on a single-year basis. This is partially due to the sheer size of the record list on the application, but also to isolate the changing trends in demographics, affluence, and structure that may affect results beyond simple police station location. In the end, we reduced the dataset down to the following dimensions:
 
 - Datetime of the crime committed
@@ -35,7 +34,6 @@ The only preprocessing work we had to perform on this dataset was to reduce cert
 - Was an arrest made?
 - Is this considered a domestic crime?
 - Latitude/Longitude where the crime was committed.
-
 
 
 ## Clustering Algorithms
@@ -69,13 +67,14 @@ def LloydsAlgorithm(data, k, max_iterations):
         if centers not Move():
             break
 ```
+
 [Figure 1: Pseudocode for Lloyd's algorithm]
 
 The primary advantage with this algorithm is its simplicity of implementation along with its wide application. However, it is an NP-hard problem in higher dimensions, and other clustering algorithms have outpaced it in performance and it is not guaranteed to find the optimum distribution. Furthermore, the initial cluster centers and the value of **K** used affect it greatly. Still, it is an exceptionally effective algorithm and worthy of consideration of clustering technique.
 
-### Density-based Spatial Clustering of Applications with Noise (DBSCAN)
-
 ### Spectral Clustering
+
+### Density-based Spatial Clustering of Applications with Noise (DBSCAN)
 
 ## Application
 
@@ -95,11 +94,15 @@ Clusters, as defined by a particular clustering algorithm, are represented by th
 
 ### Clustering Techniques
 
-On the left side of the application, the user has the option to run one of the three clustering techniques on the data.
+On the left side of the application, the user has the option to run one of the three clustering techniques on the data. Each of the buttons will refresh the data according to the crime type filter by applying one of the three algorithms available. In future work, we could implement all three options on the map simultaneously using different colors for the predicted cluster. We have found that clustering is also highly related to the crime type that has been selected. The user can select the crime type(s) from the list and the cluster map along with cluster centers will update. Multiple crimes can be selected at the same time.
 
 ## Analysis
 
-Write something here about how the distributions are different based on the clustering technique used.
+One of our initial goals in this project was to examine if clustering techniques could be used to provide alternative or additional locations for police presence with response times to be lower based on that presence. We endeavored to see if the clustering would be similar to the current locations of police stations in the city as of 2023. We discovered that the crime type is highly influential in the cluster locations. For example, if we only look at assault crimes in Chicago, the clustering is focused more on the south side of Chicago over the north side. ![crimes_assault](./images/crimes_assault_2023.png)
+
+Conversely, when we examine theft crimes in the city, the crimes are clustered in the north side of the city. ![Theft](./images/crimes_theft_2023.png)
+
+*Spectral Clustering had an issue where was clustering points very close together. This was discovered to be due to our use of latitude and longitude for our dimensional which are not linearly separate and needed to be converted to linear x and y values.*
 
 ## Conclusions and Future Work
 
