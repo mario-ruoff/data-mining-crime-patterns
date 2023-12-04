@@ -1,7 +1,7 @@
 import numpy as np
 import sqlite3
 
-from database.cluster_algorithms import KMeans4
+from database.cluster_algorithms import KMeans4, DBSCAN
 
 class ChicagoCrimes:
     def __init__(self, db_file) -> None:
@@ -67,6 +67,7 @@ class ChicagoCrimes:
         kmeans = KMeans4(n_clusters=k)
         clusters, centroids = kmeans.fit(locations)
 
+        # Return the dataset requested and the cluster centers for that dataset
         return self.current_results, clusters
     
     def get_crime_types(self):

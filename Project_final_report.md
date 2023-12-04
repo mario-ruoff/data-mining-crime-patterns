@@ -6,7 +6,7 @@
 
 ## Introduction
 
-In every society, criminal behavior has hindered the normal operation of that society. Webster defines *crime* as 'an illegal act for which someone can be punished by the government'[1](https://www.merriam-webster.com/dictionary/crime). When a crime is committed, all of society suffers, and the individual cost can vary wildly with the type of crime committed. An 2010 analysis of the various costs of crime by McCollister, French, and Fang[2](https://doi.org/10.1016/j.drugalcdep.2009.12.002) estimates the cost of a single murder, including tangible and non-tangible costs, at around 9 million dollars. In the City of Chicago, there were 494 murders in 2023 (as of October 14)[3](https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2). This would put the total cost for citizens of Chicago at around $4.4 billion dollars.  Similarly, the cost of a rape/sexual assault this year is around three million dollars.
+In every society, criminal behavior has hindered the normal operation of that society. Webster defines *crime* as 'an illegal act for which someone can be punished by the government'[[1]](https://www.merriam-webster.com/dictionary/crime). When a crime is committed, all of society suffers, and the individual cost can vary wildly with the type of crime committed. An 2010 analysis of the various costs of crime by McCollister, French, and Fang[[2]](https://doi.org/10.1016/j.drugalcdep.2009.12.002) estimates the cost of a single murder, including tangible and non-tangible costs, at around 9 million dollars. In the City of Chicago, there were 494 murders in 2023 as of October 14. [[3]](https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2) This would put the total cost for citizens of Chicago at around $4.4 billion dollars.  Similarly, the cost of a rape/sexual assault this year is around three million dollars.
 
 While the costs due to crime can be very large, often police budgets are reduced in times of austerity. The has been reported in various news articles[X] with the ... It is also known that crime affects a city unevenly, with incidents of crime being more likely in particular areas of a city over other parts. It makes sense that police presence should reflect the distribution of crimes in the city.
 
@@ -17,6 +17,9 @@ In Machine Learning, the technique of clustering divides points of data into dif
 ## Chicago Crime Dataset
 
 To plot this data, we are utilizing the Chicago Crime Dataset[3]. This dataset, provided by the city of Chicago, is a record of all reported crimes committed in the city from the year 2001 until the present day. The dataset provides anonymized crime statistics, including the primary crime type, location, and the latitude and longitude (partially anonymized) of the crime. It also provides whether the crime resulted in an arrest or if it is classified as a domestic. We decided to use this dataset due to its exceptional quality and robustness.
+
+![Figure 1 - The reduced Chicago Crimes Dataset](./images/dataset.png)
+
 
 The only preprocessing work we had to perform on this dataset was to reduce certain dimensions that were unnecessary or redundant. Additionally, we chose to only examine crime statistics on a single-year basis. This is partially due to the sheer size of the record list on the application, but also to isolate the changing trends in demographics, affluence, and structure that may affect results beyond simple police station location. In the end, we reduced the dataset down to the following dimensions.
 
@@ -57,7 +60,15 @@ The primary advantage with this algorithm is its simplicity of implementation al
 
 ### Density-based Spatial Clustering of Applications with Noise (DBSCAN)
 
+
+
 ### Spectral Clustering
+
+## Chicago 
+
+![Application Screenshot](./images/app_overview.png)
+
+[Figure 2 - A screenshot of the application]
 
 ## Analysis
 

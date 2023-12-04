@@ -95,7 +95,7 @@ class DBSCAN:
 if __name__ == '__main__':
     data = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
     kmeans = KMeans4(3)
-    dbscan = DBSCAN()
+    dbscan = DBSCAN(3.0, 2.0)
 
     cluster_centers, labels = kmeans.fit(data)
     dbscan.fit(data)
@@ -104,5 +104,5 @@ if __name__ == '__main__':
     print(labels)
 
     print("")
-    
+
     print(dbscan.get_clusters())
