@@ -42,16 +42,16 @@
           {% endfor %}
         </select>
       </div>
-      <div id="clusteringPanel" class="dark-panel">
-        <h2>Number of Clusters</h2>
-        <input id="clusteringSlider" type="range" min="1" max="{{ n_clusters }}" value="{{ n_clusters }}" step="1" oninput="this.nextElementSibling.value = this.value" onchange="performFilterRequest()">`
-        <output id="clusteringLabel">{{ n_clusters }}</output>
-      </div>
       <div id="algorithmPanel" class="dark-panel">
         <h2>Clustering Algorithm</h2>
         <button id="toggleButton1" class="toggle-button state-1 selected">K-means</button>
         <button id="toggleButton2" class="toggle-button state-2">Spectral</button>
         <button id="toggleButton3" class="toggle-button state-3">DBSCAN</button>
+        <div id="clusteringPanel">
+          <h3>Number of Clusters</h3>
+          <input id="clusteringSlider" type="range" min="1" max="{{ n_clusters }}" value="{{ n_clusters }}" step="1" oninput="this.nextElementSibling.value = this.value" onchange="performFilterRequest()">
+          <output id="clusteringLabel">{{ n_clusters }}</output>
+        </div>
       </div>
       <div id="legend" class="dark-panel">
         <h2>Marker Legend</h2>
@@ -207,29 +207,28 @@
         });
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(crimeTypePanel);
 
-        // Create the clustering slider
-        const clusteringPanel = document.getElementById("clusteringPanel");
-        const clusteringSlider = document.getElementById("clusteringSlider");
-        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(clusteringPanel);
-
         // Create the algorithm toggle button
         const algorithmPanel = document.getElementById("algorithmPanel");
         const toggleButton1 = document.getElementById("toggleButton1");
         const toggleButton2 = document.getElementById("toggleButton2");
         const toggleButton3 = document.getElementById("toggleButton3");
+        const clusteringSlider = document.getElementById("clusteringSlider");
         toggleButton1.addEventListener("click", () => {
+          clusteringPanel.style.display = "block";
           toggleButton1.classList.add("selected");
           toggleButton2.classList.remove("selected");
           toggleButton3.classList.remove("selected");
           performFilterRequest();
         });
         toggleButton2.addEventListener("click", () => {
+          clusteringPanel.style.display = "block";
           toggleButton1.classList.remove("selected");
           toggleButton2.classList.add("selected");
           toggleButton3.classList.remove("selected");
           performFilterRequest();
         });
         toggleButton3.addEventListener("click", () => {
+          clusteringPanel.style.display = "none";
           toggleButton1.classList.remove("selected");
           toggleButton2.classList.remove("selected");
           toggleButton3.classList.add("selected");
