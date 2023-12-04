@@ -49,7 +49,7 @@ if DEBUG:
 
     exit()
 
-crimes, clusters = data.get_crimes(crime_types=crime_types, k=n_clusters, year=current_year, num_crimes=num_crimes)
+crimes, clusters = data.get_crimes(crime_types=[crime_types[0]], k=n_clusters, year=current_year, num_crimes=num_crimes)
 
 # Set up main route
 @app.route("/")
@@ -78,9 +78,10 @@ def load_map():
 @app.route("/api/filter")
 def filter():
     crime_types = request.args.getlist("crime_types[]")
+    algorithm = int(request.args.get("algorithm", "", type=str)[-1])
     year = request.args.get("year", 0 , type=int)
     n_clusters = request.args.get("n_clusters", 0 , type=int)
-    crimes, clusters = data.get_crimes(crime_types=crime_types, year=year, k=n_clusters)
+    crimes, clusters = data.get_crimes(crime_types=crime_types, year=year, k=n_clusters, algorithm=algorithm)
     
     return {
         "crimes": crimes,
