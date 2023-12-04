@@ -58,9 +58,12 @@ class SpectralClustering:
 
         # Cluster using KMeans
         kmeans = KMeans4(self.n_clusters)
-        clusters, labels = kmeans.fit(X_transformed)
+        _, labels = kmeans.fit(X_transformed)
 
-        return clusters, labels
+        # Calculate the mean of the original data points in each cluster to find the cluster centers
+        cluster_centers = np.array([data[labels == i].mean(axis=0) for i in range(self.n_clusters)])
+
+        return cluster_centers, labels
 
     def compute_eigenvectors(self, L, k):
         # Simple power iteration algorithm for eigenvector computation
