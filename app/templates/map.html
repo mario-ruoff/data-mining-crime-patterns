@@ -5,6 +5,7 @@
     <title>{{ title }}</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='map.css') }}">
     <script src="{{ url_for('static', filename='map-style.js') }}"></script>
@@ -48,9 +49,9 @@
       </div>
       <div id="algorithmPanel" class="dark-panel">
         <h2>Clustering Algorithm</h2>
-        <button id="toggleButton" class="toggle-button state-1">State 1</button>
-        <button id="toggleButton" class="toggle-button state-2">State 2</button>
-        <button id="toggleButton" class="toggle-button state-3">State 3</button>
+        <button id="toggleButton1" class="toggle-button state-1 selected">K-means</button>
+        <button id="toggleButton2" class="toggle-button state-2">Spectral</button>
+        <button id="toggleButton3" class="toggle-button state-3">DBSCAN</button>
       </div>
       <div id="legend" class="dark-panel">
         <h2>Marker Legend</h2>
@@ -78,12 +79,16 @@
         crimeTypeDropdown.disabled = true;
         clusteringSlider.disabled = true;
         timelineSlider.disabled = true;
+        toggleButton1.disabled = true;
+        toggleButton2.disabled = true;
+        toggleButton3.disabled = true;
 
         // Get the year and crime types from the filter controls
         const selectedOptions = Array.from(document.getElementById("crimeTypeDropdown").selectedOptions).map(option => option.value);
         
         // Make the filter request
         $.getJSON($SCRIPT_ROOT + "/api/filter", {
+          algorithm: document.querySelector(".toggle-button.selected").id,
           year: timelineSlider.value,
           n_clusters: clusteringSlider.value,
           crime_types: selectedOptions
@@ -112,6 +117,9 @@
           crimeTypeDropdown.disabled = false;
           clusteringSlider.disabled = false;
           timelineSlider.disabled = false;
+          toggleButton1.disabled = false;
+          toggleButton2.disabled = false;
+          toggleButton3.disabled = false;
         });
       }
 
@@ -206,23 +214,26 @@
 
         // Create the algorithm toggle button
         const algorithmPanel = document.getElementById("algorithmPanel");
-        const toggleButton = document.getElementById("toggleButton");
-        toggleButton.addEventListener("click", function() {
-          var btn = this;
-          
-          if (btn.classList.contains("state-1")) {
-            btn.classList.remove("state-1");
-            btn.classList.add("state-2");
-            btn.textContent = "State 2";
-          } else if (btn.classList.contains("state-2")) {
-            btn.classList.remove("state-2");
-            btn.classList.add("state-3");
-            btn.textContent = "State 3";
-          } else {
-            btn.classList.remove("state-3");
-            btn.classList.add("state-1");
-            btn.textContent = "State 1";
-          }
+        const toggleButton1 = document.getElementById("toggleButton1");
+        const toggleButton2 = document.getElementById("toggleButton2");
+        const toggleButton3 = document.getElementById("toggleButton3");
+        toggleButton1.addEventListener("click", () => {
+          toggleButton1.classList.add("selected");
+          toggleButton2.classList.remove("selected");
+          toggleButton3.classList.remove("selected");
+          performFilterRequest();
+        });
+        toggleButton2.addEventListener("click", () => {
+          toggleButton1.classList.remove("selected");
+          toggleButton2.classList.add("selected");
+          toggleButton3.classList.remove("selected");
+          performFilterRequest();
+        });
+        toggleButton3.addEventListener("click", () => {
+          toggleButton1.classList.remove("selected");
+          toggleButton2.classList.remove("selected");
+          toggleButton3.classList.add("selected");
+          performFilterRequest();
         });
         map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(algorithmPanel);
 
