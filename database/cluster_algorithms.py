@@ -52,13 +52,19 @@ class SpectralClustering:
 
         # Compute the first k eigenvectors
         eigenvalues, eigenvectors = self.compute_eigenvectors(L, self.n_clusters)
+        print("EIGENVECTORS")
+        print(eigenvectors)
 
         # Transform the data
         X_transformed = eigenvectors.real
 
         # Cluster using KMeans
         kmeans = KMeans4(self.n_clusters)
-        _, labels = kmeans.fit(X_transformed)
+        test, labels = kmeans.fit(X_transformed)
+        print("TEST")
+        print(test)
+        print("LABELS")
+        print(labels)
 
         # Calculate the mean of the original data points in each cluster to find the cluster centers
         cluster_centers = np.array([data[labels == i].mean(axis=0) for i in range(self.n_clusters)])
