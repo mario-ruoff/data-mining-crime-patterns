@@ -29,9 +29,8 @@ class ChicagoCrimes:
         self.num_clusters = len(self.current_results)
         return self.current_results
     
-    def get_crimes(self, k=2, crime_types=None, year=2023, num_crimes=0, algorithm=1):
+    def get_crimes(self, k=2, crime_types=None, year=2023, algorithm=1):
         crime_types_string = ', '.join(f"'{x}'" for x in crime_types)
-        record_limter = '' if num_crimes == 0 else 'LIMIT 10000'
         
         db_connection = sqlite3.connect(self.db_file)
         cursor = db_connection.cursor()
@@ -39,14 +38,14 @@ class ChicagoCrimes:
             SELECT latitude,longitude, date, primary_type from crimes
             WHERE primary_type IN ({crime_types_string}) AND year={year}
             ORDER BY random()
-            {record_limter}
+            LIMIT 200
             '''
         
         # Get crimes into numpy array
         self.current_results = []
         raw_results = cursor.execute(query)
         result = raw_results.fetchone()
-
+        
         # Abort appending if no results
         if result is None:
             return self.current_results, np.array([])
@@ -58,6 +57,7 @@ class ChicagoCrimes:
         
         record_array = np.array(self.current_results)
         locations = record_array[:, (0,1)]
+        print(len(locations))
 
         # Abort clustering if not enough results
         if len(locations) < k:

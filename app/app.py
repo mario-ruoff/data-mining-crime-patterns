@@ -21,11 +21,6 @@ DEBUG = False
 
 algorithms = dict({1: "KMeans", 2: "Spectral", 3: "DBSCAN"})
 
-if(len(crime_types) > 1): 
-    num_crimes = 10000
-else:
-    num_crimes = 0
-
 # This section of code is not run when the application is running. It's to help provide metrics for the report.
 if DEBUG:
     x = []
@@ -33,7 +28,7 @@ if DEBUG:
     for a in algorithms:
         algorithm = algorithms[a]
         start_time = time.time()
-        crimes, clusters = data.get_crimes(crime_types=crime_types, k=n_clusters, year=2022, num_crimes=0, algorithm=a)
+        crimes, clusters = data.get_crimes(crime_types=crime_types, k=n_clusters, year=2022, algorithm=a)
         end_time = time.time()
         x.append(algorithm)
         y.append(np.round(end_time - start_time, decimals=2))
@@ -49,7 +44,7 @@ if DEBUG:
 
     exit()
 
-crimes, clusters = data.get_crimes(crime_types=[crime_types[0]], k=n_clusters, year=current_year, num_crimes=num_crimes)
+crimes, clusters = data.get_crimes(crime_types=[crime_types[0]], k=n_clusters, year=current_year)
 
 # Set up main route
 @app.route("/")
