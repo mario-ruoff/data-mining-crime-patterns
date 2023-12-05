@@ -65,8 +65,6 @@ class ChicagoCrimes:
 
         # Convert lat/lng to meters for clustering
         converted_locations = self.lat_lng_to_meters(locations)
-        print(locations)
-        print(converted_locations)
 
         #Apply clustering
         match algorithm:
@@ -82,8 +80,6 @@ class ChicagoCrimes:
 
         # Convert centroids back to lat/lng
         clusters = self.meters_to_lat_lng(converted_clusters, np.mean(locations[:, 0]))
-        print(converted_clusters)
-        print(clusters)
 
         # Return the dataset requested and the cluster centers for that dataset
         return self.current_results, clusters

@@ -32,6 +32,7 @@ class KMeans4:
 
         return cluster_centroids, labels
 
+
 class SpectralClustering:
     def __init__(self, n_clusters, affinity='rbf', gamma=1.0):
         self.n_clusters = n_clusters
@@ -52,8 +53,6 @@ class SpectralClustering:
 
         # Compute the first k eigenvectors
         eigenvalues, eigenvectors = self.compute_eigenvectors(L, self.n_clusters)
-        print("EIGENVECTORS")
-        print(eigenvectors)
 
         # Transform the data
         X_transformed = eigenvectors.real
@@ -61,10 +60,6 @@ class SpectralClustering:
         # Cluster using KMeans
         kmeans = KMeans4(self.n_clusters)
         test, labels = kmeans.fit(X_transformed)
-        print("TEST")
-        print(test)
-        print("LABELS")
-        print(labels)
 
         # Calculate the mean of the original data points in each cluster to find the cluster centers
         cluster_centers = np.array([data[labels == i].mean(axis=0) for i in range(self.n_clusters)])
@@ -83,7 +78,7 @@ class SpectralClustering:
 
 
 class DBSCAN:
-    def __init__(self, eps=0.5, min_samples=5):
+    def __init__(self, eps=2, min_samples=3):
         self.eps = eps
         self.min_samples = min_samples
 
@@ -122,7 +117,8 @@ class DBSCAN:
                 C += 1
                 self.expand_cluster(X, labels, P, neighbors, C, visited)
 
-        return self.calculate_cluster_means(X, labels), labels
+        cluster_centers = self.calculate_cluster_means(X, labels)
+        return cluster_centers, labels
 
     def expand_cluster(self, X, labels, P, neighbors, C, visited):
         """
@@ -158,8 +154,17 @@ class DBSCAN:
         if -1 in unique_labels:
             unique_labels.remove(-1)  # Remove noise label if present
 
-        cluster_means = np.array([X[labels == label].mean(axis=0) for label in unique_labels])
-        return cluster_means
+        cluster_means = []
+        for unique_label in unique_labels:
+            # Get all points in this specific cluster
+            points_in_cluster = np.array([value for value, label in zip(X, labels) if label == unique_label])
+            if len(points_in_cluster) > 0:
+                cluster_mean = points_in_cluster.mean(axis=0)
+                cluster_means.append(cluster_mean)
+            else:
+                cluster_means.append(None)  # Handle empty cluster case
+
+        return np.array(cluster_means)
         
 if __name__ == '__main__':
     data = np.array([[1, 2], [1, 4], [1, 0], [10, 2], [10, 4], [10, 0]])
