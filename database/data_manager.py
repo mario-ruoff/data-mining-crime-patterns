@@ -37,7 +37,7 @@ class ChicagoCrimes:
         cursor = db_connection.cursor()
         query = f'''
             SELECT latitude,longitude, date, primary_type from crimes
-            WHERE arrest=1 and primary_type IN ({crime_types_string}) AND location_description='STREET' AND year={year}
+            WHERE primary_type IN ({crime_types_string}) AND year={year}
             ORDER BY random()
             {record_limter}
             '''
